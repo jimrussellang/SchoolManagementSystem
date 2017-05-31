@@ -1,0 +1,15 @@
+.nanobar .bar {
+	background: #e53935;
+}
+
+.back-position {
+	z-index: 1000 !important;
+}
+
+#nanobar-container {
+	position: fixed;
+	top: 0;
+ 	left: 0;
+ 	width: 100%;
+ 	z-index: 9999;
+}
