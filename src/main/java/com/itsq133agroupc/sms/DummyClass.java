@@ -29,7 +29,7 @@ public class DummyClass {
 	@RequestMapping(value = {"dummy", "dummy2"}, method = RequestMethod.GET)
 	public String dummy(Locale locale, Model model, HttpSession session, HttpServletResponse response) {
 		logger.info("Welcome home! The client locale is {}.", locale);
-		//Hello
+		//Hello boi
 		
 		return "dummy";
 	}
