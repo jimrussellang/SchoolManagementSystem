@@ -1,0 +1,16 @@
+Host: sql12.freesqldatabase.com
+Database name: sql12178500
+Database user: sql12178500
+Database password: u5e8Bt8RGa
+Port number: 3306
+
+Hello, I will be teaching you how to use your local PHPMYADMIN to connect to this remote database
+1. Go to your XAMPP directory
+2. Access C:\xampp\phpMyAdmin\config.inc.php
+3. Add this to the end of the file
+
+$i++;
+$cfg['Servers'][$i]['host'] = 'sql12.freesqldatabase.com:3306'; //provide hostname and port if other than default
+$cfg['Servers'][$i]['user'] = 'sql12178500'; 	//user name for your remote server
+$cfg['Servers'][$i]['password'] = 'u5e8Bt8RGa';  //password
+$cfg['Servers'][$i]['auth_type'] = 'config';
