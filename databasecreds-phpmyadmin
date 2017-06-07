@@ -14,3 +14,4 @@ $cfg['Servers'][$i]['host'] = 'sql12.freesqldatabase.com:3306'; //provide hostna
 $cfg['Servers'][$i]['user'] = 'sql12178500'; 	//user name for your remote server
 $cfg['Servers'][$i]['password'] = 'u5e8Bt8RGa';  //password
 $cfg['Servers'][$i]['auth_type'] = 'config';
+Break
