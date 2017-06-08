@@ -1,7 +1,10 @@
 package com.itsq133agroupc.sms;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -23,7 +26,7 @@ public class Database {
 	// private String username = "root";
 	// private String password = "";
 
-	Connection con;
+	private Connection con;
 
 	StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
@@ -150,6 +153,38 @@ public class Database {
 		}
 
 		return is_validaccount;
+	}
+	
+	public boolean addSchoolAccount(){//To Do: Add the text box data here
+		try{
+			connect();
+			//generate random data
+			String userID = ""+(new Random()).nextInt(9999); //random UserID
+			String userName = new BigInteger(64,(new SecureRandom())).toString(32); //random Username
+			String accountType = "School"+(new Random()).nextInt(100)+"-"+"6000"; //random AcctType
+			String pass = new StrongPasswordEncryptor().encryptPassword("rosebud");
+			
+			String query = "INSERT INTO `accounts` "
+					+ "(`UserID`, "
+					+ "`UserName`, "
+					+ "`Password`, "
+					+ "`AccountType`, "
+					+ "`DateRegistered`) "
+					+ "VALUES ('"+userID+"', "
+					+ "'"+userName+"', "
+					+ "'"+pass+"', "
+					+ "'"+accountType+"', "
+					+ "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; //Server time is offset by 16 hours (Server Time UTC -8)
+			int res = con.createStatement().executeUpdate(query);
+			if(res>0){
+				return true;
+			}
+			
+		}
+		catch(Exception e){
+			System.out.println("Error: "+e);
+		}
+		return false;
 	}
 
 }
