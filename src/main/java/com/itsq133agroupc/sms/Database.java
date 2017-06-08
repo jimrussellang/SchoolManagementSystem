@@ -155,14 +155,22 @@ public class Database {
 		return is_validaccount;
 	}
 	
-	public boolean addSchoolAccount(){//To Do: Add the text box data here
+	public boolean addSchoolAccount(String userID,String userName,String accountType,String pass){
+		
 		try{
 			connect();
-			//generate random data
-			String userID = ""+(new Random()).nextInt(9999); //random UserID
-			String userName = new BigInteger(64,(new SecureRandom())).toString(32); //random Username
-			String accountType = "School"+(new Random()).nextInt(100)+"-"+"6000"; //random AcctType
-			String pass = new StrongPasswordEncryptor().encryptPassword("rosebud");
+			StrongPasswordEncryptor spwd = new StrongPasswordEncryptor();
+			//generate random data if empty
+			if(userID.trim().isEmpty())
+				userID = ""+(new Random()).nextInt(9999); //random UserID
+			if(userName.trim().isEmpty())
+			userName = new BigInteger(64,(new SecureRandom())).toString(32); //random Username
+			if(accountType.trim().isEmpty())
+				accountType = "School"+(new Random()).nextInt(100)+"-"+"6000"; //random AcctType
+			if(pass.isEmpty())
+				pass = spwd.encryptPassword("rosebud"); //Should be encrypted before or after going in method?
+			else
+				pass = spwd.encryptPassword(pass);
 			
 			String query = "INSERT INTO `accounts` "
 					+ "(`UserID`, "
@@ -180,6 +188,22 @@ public class Database {
 				return true;
 			}
 			
+		}
+		catch(Exception e){
+			System.out.println("Error: "+e);
+		}
+		return false;
+	}
+	
+	public boolean deleteSchoolAccount(String userID){
+		try{
+			String query = "DELETE FROM `accounts` WHERE `accounts`.`UserID` = "
+					+ userID;
+			connect();
+			int res = con.createStatement().executeUpdate(query);
+			if(res>0){
+				return true;
+			}
 		}
 		catch(Exception e){
 			System.out.println("Error: "+e);
