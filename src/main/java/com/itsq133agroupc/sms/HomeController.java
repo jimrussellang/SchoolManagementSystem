@@ -45,6 +45,9 @@ public class HomeController {
 		}
 
 		model.addAttribute("serverTime", formattedDate);
+		
+		//Attribute used for printing the page title
+		model.addAttribute("page_title", "Dashboard");
 
 		return "home";
 	}

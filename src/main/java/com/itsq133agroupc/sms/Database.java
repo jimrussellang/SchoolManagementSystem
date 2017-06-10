@@ -154,59 +154,83 @@ public class Database {
 
 		return is_validaccount;
 	}
-	
-	public boolean addSchoolAccount(String userID,String userName,String accountType,String pass){
-		
-		try{
+
+	public ArrayList<ArrayList<String>> retrieveAccounts() {
+		ArrayList<ArrayList<String>> accounts = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM accounts";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> record = new ArrayList<String>();
+				record.add(rs.getString("UserID"));
+				record.add(rs.getString("UserName"));
+				record.add(rs.getString("AccountType"));
+				record.add(rs.getString("DateRegistered"));
+				accounts.add(record);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return accounts;
+	}
+
+	public boolean addSchoolAccount(String userID, String userName, String accountType, String pass) {
+
+		try {
 			connect();
 			StrongPasswordEncryptor spwd = new StrongPasswordEncryptor();
-			//generate random data if empty
-			if(userID.trim().isEmpty())
-				userID = ""+(new Random()).nextInt(9999); //random UserID
-			if(userName.trim().isEmpty())
-			userName = new BigInteger(64,(new SecureRandom())).toString(32); //random Username
-			if(accountType.trim().isEmpty())
-				accountType = "School"+(new Random()).nextInt(100)+"-"+"6000"; //random AcctType
-			if(pass.isEmpty())
-				pass = spwd.encryptPassword("rosebud"); //Should be encrypted before or after going in method?
+			// generate random data if empty
+			if (userID.trim().isEmpty())
+				userID = "" + (new Random()).nextInt(9999); // random UserID
+			if (userName.trim().isEmpty())
+				userName = new BigInteger(64, (new SecureRandom())).toString(32); // random
+																					// Username
+			if (accountType.trim().isEmpty())
+				accountType = "School" + (new Random()).nextInt(100) + "-" + "6000"; // random
+																						// AcctType
+			if (pass.isEmpty())
+				pass = spwd.encryptPassword("rosebud"); // Should be encrypted
+														// before or after going
+														// in method?
 			else
 				pass = spwd.encryptPassword(pass);
-			
-			String query = "INSERT INTO `accounts` "
-					+ "(`UserID`, "
-					+ "`UserName`, "
-					+ "`Password`, "
-					+ "`AccountType`, "
-					+ "`DateRegistered`) "
-					+ "VALUES ('"+userID+"', "
-					+ "'"+userName+"', "
-					+ "'"+pass+"', "
-					+ "'"+accountType+"', "
-					+ "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; //Server time is offset by 16 hours (Server Time UTC -8)
+
+			String query = "INSERT INTO `accounts` " + "(`UserID`, " + "`UserName`, " + "`Password`, "
+					+ "`AccountType`, " + "`DateRegistered`) " + "VALUES ('" + userID + "', " + "'" + userName + "', "
+					+ "'" + pass + "', " + "'" + accountType + "', " + "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
+																												// time
+																												// is
+																												// offset
+																												// by
+																												// 16
+																												// hours
+																												// (Server
+																												// Time
+																												// UTC
+																												// -8)
 			int res = con.createStatement().executeUpdate(query);
-			if(res>0){
+			if (res > 0) {
 				return true;
 			}
-			
-		}
-		catch(Exception e){
-			System.out.println("Error: "+e);
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
 		}
 		return false;
 	}
-	
-	public boolean deleteSchoolAccount(String userID){
-		try{
-			String query = "DELETE FROM `accounts` WHERE `accounts`.`UserID` = "
-					+ userID;
+
+	public boolean deleteSchoolAccount(String userID) {
+		try {
+			String query = "DELETE FROM `accounts` WHERE `accounts`.`UserID` = " + userID;
 			connect();
 			int res = con.createStatement().executeUpdate(query);
-			if(res>0){
+			if (res > 0) {
 				return true;
 			}
-		}
-		catch(Exception e){
-			System.out.println("Error: "+e);
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
 		}
 		return false;
 	}

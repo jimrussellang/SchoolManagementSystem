@@ -79,6 +79,7 @@
 						<li class="section"><i class="fa fa-file-o"
 							aria-hidden="true"></i> Current Modules</li>
 						<li><a href="curriculum-builder">Curriculum Builder</a></li>
+						<li><a href="accounts">Accounts</a></li>
 						<li class="line"></li>
 						<li class="section"><i class="fa fa-file-o"
 							aria-hidden="true"></i>Other Modules</li>
