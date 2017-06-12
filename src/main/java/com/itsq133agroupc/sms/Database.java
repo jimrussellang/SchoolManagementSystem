@@ -77,14 +77,44 @@ public class Database {
 				stmt.execute(query);
 				System.out.println("Root Account Table is now configured.");
 			} else {
-				query = "SELECT * FROM root_account";
+				// Check if Root Account Table has the correct columns
+				query = "DESCRIBE root_account";
 				rs = stmt.executeQuery(query);
-				if (rs.next()) {
-					try {
-						if (rs.getInt("UserID") == 0 && rs.getString("UserName").equals(root_user)
-								&& passwordEncryptor.checkPassword(root_pass, rs.getString("Password"))) {
-							System.out.println("Root Account is configured correctly!");
-						} else {
+				boolean has_rootaccount_userid = false;
+				boolean has_rootaccount_username = false;
+				boolean has_rootaccount_password = false;
+				while (rs.next()) {
+					if (rs.getString("Field").equals("UserID") && rs.getString("Type").contains("int")) {
+						has_rootaccount_userid = true;
+					}
+					if (rs.getString("Field").equals("UserName") && rs.getString("Type").equals("varchar(5)")) {
+						has_rootaccount_username = true;
+					}
+					if (rs.getString("Field").equals("Password") && rs.getString("Type").equals("varchar(100)")) {
+						has_rootaccount_password = true;
+					}
+				}
+				if (has_rootaccount_userid && has_rootaccount_username && has_rootaccount_password) {
+					// Check if Root Account exists and is configured correctly
+					query = "SELECT * FROM root_account";
+					rs = stmt.executeQuery(query);
+					if (rs.next()) {
+						try {
+							if (rs.getInt("UserID") == 0 && rs.getString("UserName").equals(root_user)
+									&& passwordEncryptor.checkPassword(root_pass, rs.getString("Password"))) {
+								System.out.println("Root Account is configured correctly!");
+							} else {
+								query = "DELETE FROM root_account WHERE UserID = " + rs.getInt("UserID");
+								stmt.execute(query);
+								query = "INSERT INTO root_account ( UserID, UserName, Password ) VALUES ( 0, '"
+										+ root_user + "', '" + passwordEncryptor.encryptPassword(root_pass) + "' )";
+								stmt.execute(query);
+								System.out.println(
+										"Root Account was set incorrectly, therefore, a reinitialization was executed. Root Account is now correctly configured.");
+							}
+						} catch (Exception e) {
+							System.out.println("Error! " + e);
+
 							query = "DELETE FROM root_account WHERE UserID = " + rs.getInt("UserID");
 							stmt.execute(query);
 							query = "INSERT INTO root_account ( UserID, UserName, Password ) VALUES ( 0, '" + root_user
@@ -93,32 +123,101 @@ public class Database {
 							System.out.println(
 									"Root Account was set incorrectly, therefore, a reinitialization was executed. Root Account is now correctly configured.");
 						}
-					} catch (Exception e) {
-						System.out.println("Error! " + e);
-
-						query = "DELETE FROM root_account WHERE UserID = " + rs.getInt("UserID");
-						stmt.execute(query);
+					} else {
 						query = "INSERT INTO root_account ( UserID, UserName, Password ) VALUES ( 0, '" + root_user
 								+ "', '" + passwordEncryptor.encryptPassword(root_pass) + "' )";
 						stmt.execute(query);
 						System.out.println(
-								"Root Account was set incorrectly, therefore, a reinitialization was executed. Root Account is now correctly configured.");
+								"Root Account was not found, therefore, a reinitialization was executed. Root Account is now correctly configured.");
 					}
-				} else {
+				}
+				else{
+					query = "DROP TABLE root_account";
+					stmt.execute(query);
+					query = "CREATE TABLE root_account ( UserID int NOT NULL, UserName varchar(5) NOT NULL UNIQUE, Password varchar(100) NOT NULL, PRIMARY KEY (UserID) )";
+					stmt.execute(query);
 					query = "INSERT INTO root_account ( UserID, UserName, Password ) VALUES ( 0, '" + root_user + "', '"
 							+ passwordEncryptor.encryptPassword(root_pass) + "' )";
 					stmt.execute(query);
-					System.out.println(
-							"Root Account was not found, therefore, a reinitialization was executed. Root Account is now correctly configured.");
+					System.out.println("Root Account Table is configured incorrectly, therefore, a reconfiguration was executed. Root Table is now correctly configured.");
 				}
 			}
+			
 			// If Accounts table does not exist, create one
 			if (!has_accounts) {
-				query = "CREATE TABLE accounts ( UserID int NOT NULL, UserName varchar(20) NOT NULL, Password varchar(100) NOT NULL, AccountType varchar(100) NOT NULL, DateRegistered datetime NOT NULL, PRIMARY KEY (UserID) )";
+				query = "CREATE TABLE accounts ( UserID int NOT NULL, UserName text NOT NULL, Password text NOT NULL, AccountType text NOT NULL, Parameters text, DateRegistered datetime NOT NULL, PRIMARY KEY (UserID) )";
 				stmt.execute(query);
 				System.out.println("Accounts Table is now configured.");
 			} else {
-				System.out.println("Accounts table is configured correctly!");
+				// Check if Accounts Table has the correct columns
+				query = "DESCRIBE accounts";
+				rs = stmt.executeQuery(query);
+				boolean has_accounts_userid = false;
+				boolean has_accounts_username = false;
+				boolean has_accounts_password = false;
+				boolean has_accounts_accounttype = false;
+				boolean has_accounts_parameters = false;
+				boolean has_accounts_dateregistered = false;
+				while(rs.next()){
+					if (rs.getString("Field").equals("UserID")) {
+						has_accounts_userid = true;
+					}
+					if (rs.getString("Field").equals("UserName")) {
+						has_accounts_username = true;
+					}
+					if (rs.getString("Field").equals("Password")) {
+						has_accounts_password = true;
+					}
+					if (rs.getString("Field").equals("AccountType")) {
+						has_accounts_accounttype = true;
+					}
+					if (rs.getString("Field").equals("Parameters")) {
+						has_accounts_parameters = true;
+					}
+					if (rs.getString("Field").equals("DateRegistered")) {
+						has_accounts_dateregistered = true;
+					}
+				}
+				//Check if Accounts Table has the correct primary key
+				boolean has_accounts_primarykey = false;
+				query = "SHOW INDEX FROM accounts";
+				rs = stmt.executeQuery(query);
+				if(rs.next()){
+					if(rs.getString("Column_name").equals("UserID")){
+						has_accounts_primarykey = true;
+					}
+				}
+				if(!has_accounts_userid){
+					query = "ALTER TABLE accounts ADD COLUMN UserID int";
+					stmt.execute(query);
+					query = "ALTER TABLE accounts ADD PRIMARY KEY(UserID)";
+					stmt.execute(query);
+				}
+				if(!has_accounts_primarykey){
+					query = "ALTER TABLE accounts ADD PRIMARY KEY(UserID)";
+					stmt.execute(query);
+				}
+				if(!has_accounts_username){
+					query = "ALTER TABLE accounts ADD COLUMN UserName text NOT NULL";
+					stmt.execute(query);
+				}
+				if(!has_accounts_password){
+					query = "ALTER TABLE accounts ADD COLUMN Password text NOT NULL";
+					stmt.execute(query);
+				}
+				if(!has_accounts_accounttype){
+					query = "ALTER TABLE accounts ADD COLUMN AccountType text NOT NULL";
+					stmt.execute(query);
+				}
+				if(!has_accounts_parameters){
+					query = "ALTER TABLE accounts ADD COLUMN Parameters text";
+					stmt.execute(query);
+				}
+				if(!has_accounts_dateregistered){
+					query = "ALTER TABLE accounts ADD COLUMN DateRegistered datetime NOT NULL";
+					stmt.execute(query);
+				}
+				System.out.println("Accounts table is now configured correctly!");
 			}
 
 			con.close();
@@ -155,6 +254,28 @@ public class Database {
 		return is_validaccount;
 	}
 
+	public int getAccountUserID(String username) {
+		int userid = -1;
+		try {
+			connect();
+			String query = null;
+			if (username.equals("admin")) {
+				userid = 0;
+			} else {
+				query = "SELECT * FROM accounts WHERE UserName ='" + username + "'";
+			}
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next() && rs.last()) {
+				userid = rs.getInt("UserID");
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+
+		return userid;
+	}
+
 	public ArrayList<ArrayList<String>> retrieveAccounts() {
 		ArrayList<ArrayList<String>> accounts = new ArrayList<ArrayList<String>>();
 		try {
@@ -176,7 +297,7 @@ public class Database {
 		return accounts;
 	}
 
-	public boolean addSchoolAccount(String userID, String userName, String accountType, String pass) {
+	public boolean addAccount(String userID, String userName, String accountType, String pass) {
 
 		try {
 			connect();
@@ -221,7 +342,7 @@ public class Database {
 		return false;
 	}
 
-	public boolean deleteSchoolAccount(String userID) {
+	public boolean deleteAccount(String userID) {
 		try {
 			String query = "DELETE FROM `accounts` WHERE `accounts`.`UserID` = " + userID;
 			connect();

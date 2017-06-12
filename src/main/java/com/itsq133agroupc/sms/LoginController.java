@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -35,17 +36,26 @@ public class LoginController {
 	
 	//Controller for Login
 	@RequestMapping(value = "/login_verify", method = RequestMethod.POST)
-	public @ResponseBody String loginVerify(Model model, @ModelAttribute("loginBean") LoginBean loginBean, HttpSession session) {
+	public @ResponseBody String loginVerify(Model model, @ModelAttribute("loginBean") LoginBean loginBean, HttpSession session, HttpServletRequest request) {
 		logger.info("A user is trying to login...");
 		
 		if (loginBean != null && loginBean.getUsername() != null & loginBean.getPassword() != null) {
 			Database database = new Database();
 			boolean is_validaccount = database.loginAccount(loginBean.getUsername(), loginBean.getPassword());
             if (is_validaccount) {
-            	session.setAttribute("login_userid", 0);
-            	return "<script>"
-                		+ "window.location.replace('home')"
-                		+ "</script>";
+            	session.setAttribute("login_userid", database.getAccountUserID(loginBean.getUsername()));
+            	if(session.getAttribute("pageforward") != null){
+            		String pageforward = session.getAttribute("pageforward").toString();
+            		session.removeAttribute("pageforward");
+            		return "<script>"
+                    		+ "window.location ='" + pageforward + "';"
+                    		+ "</script>";
+            	}
+            	else{
+            		return "<script>"
+                    		+ "window.location.replace('home')"
+                    		+ "</script>";
+            	}
             } else {
             	logger.info("A user fails to login...");
                 model.addAttribute("login_message", "Invalid Details");

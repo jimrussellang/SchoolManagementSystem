@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -29,7 +30,7 @@ public class HomeController {
 	//Comments MORE
 	// Simply selects the home view to render by returning its name.
 	@RequestMapping(value = { "/", "home" }, method = RequestMethod.GET)
-	public String home(Locale locale, Model model, HttpSession session, HttpServletResponse response) {
+	public String home(Locale locale, Model model, HttpSession session, HttpServletResponse response, HttpServletRequest request) {
 		logger.info("Welcome home! The client locale is {}.", locale);
 		//System.out.println(new Database().addSchoolAccount());
 		System.out.println("HELLO!");
@@ -41,6 +42,8 @@ public class HomeController {
 		// Checks if user is logged in. If not, redirects to Login page.
 		if (!logincontroller.isLoggedIn(session, response)) {
 			model.addAttribute("access_denied_msg", "You must login first to access this page!");
+			// Used for redirecting to current page after logging in
+			session.setAttribute("pageforward", request.getRequestURL());
 			return "login";
 		}
 

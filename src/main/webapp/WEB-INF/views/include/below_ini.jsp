@@ -25,4 +25,12 @@
 	function loadPage() {
 		nanobar.go(10);
 	}
+	
+	if('${notify_msg}' != ''){
+		$.notify("${notify_msg}", '${notify_msg_state}');
+	}
+	if('${param.notify_msg}' != ''){
+		$.notify("${param.notify_msg}", '${param.notify_msg_state}');
+	}
+	
 </script>
