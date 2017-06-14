@@ -52,8 +52,6 @@ public class HomeController {
 		//Attribute used for printing the page title
 		model.addAttribute("page_title", "Dashboard");
 		
-		
-		new Database().editAccount("1952", "kevTest", "ST", "mypass");
 		return "home";
 	}
 
@@ -70,8 +68,8 @@ public class HomeController {
 		logger.info("Setting up system...");
 
 		
-		//Database db = new Database();
-		//db.initializeDatabase();
+		Database db = new Database();
+		db.initializeDatabase();
 		
 		return "<script>"
 		+ "$('#setup_container').removeClass('__loading');"
