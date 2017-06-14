@@ -321,14 +321,6 @@ public class Database {
 			String query = "INSERT INTO `accounts` " + "(`UserID`, " + "`UserName`, " + "`Password`, "
 					+ "`AccountType`, " + "`DateRegistered`) " + "VALUES ('" + userID + "', " + "'" + userName + "', "
 					+ "'" + pass + "', " + "'" + accountType + "', " + "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
-																												// time
-																												// is
-																												// offset
-																												// by
-																												// 16
-																												// hours
-																												// (Server
-																												// Time
 																												// UTC
 																												// -8)
 			int res = con.createStatement().executeUpdate(query);

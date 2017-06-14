@@ -17,3 +17,8 @@
 .select2-dropdown {
   z-index: 999999;
 }
+
+.table-striped tbody tr.highlight td, .table-striped tbody tr.highlight th { 
+    background-color: #2196f3;
+    color: #e3f2fd;
+}

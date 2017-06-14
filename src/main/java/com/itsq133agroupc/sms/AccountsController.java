@@ -1,6 +1,7 @@
 package com.itsq133agroupc.sms;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -48,7 +49,8 @@ public class AccountsController {
 
 	// Simply selects the accounts view to render by returning its name.
 	@RequestMapping(value = { "/accounts_add" }, method = RequestMethod.POST)
-	public String accounts_add(Model model, HttpSession session, @ModelAttribute("accountBean") AccountBean accountBean, HttpServletResponse response, HttpServletRequest request) {
+	public String accounts_add(Model model, HttpSession session, @ModelAttribute("accountBean") AccountBean accountBean,
+			HttpServletResponse response, HttpServletRequest request) {
 		logger.info("A user has accessed added a new account.");
 
 		// Checks if user is logged in. If not, redirects to Login page.
@@ -58,26 +60,56 @@ public class AccountsController {
 			session.setAttribute("pageforward", request.getRequestURL());
 			return "login";
 		}
-		
+
 		Database database = new Database();
 		boolean isAdded = false;
-		//Prevents admin conflict
-		if(!accountBean.getUsername().toLowerCase().equals("admin")){
-			isAdded = database.addAccount(accountBean.getUserid(), accountBean.getUsername(), accountBean.getAccttype(), accountBean.getPassword());
+		// Prevents admin conflict
+		if (!accountBean.getUsername().toLowerCase().equals("admin")) {
+			isAdded = database.addAccount(accountBean.getUserid(), accountBean.getUsername(), accountBean.getAccttype(),
+					accountBean.getPassword());
 		}
-		if(isAdded){
+		if (isAdded) {
 			model.addAttribute("notify_msg_state", "success");
 			model.addAttribute("notify_msg", "Successfully added a new account!");
-		}
-		else{
+		} else {
 			model.addAttribute("notify_msg_state", "error");
-			model.addAttribute("notify_msg", "An error occurred adding an account! Please check if values are correct.");
+			model.addAttribute("notify_msg",
+					"An error occurred adding an account! Please check if values are correct.");
 		}
-		
-		//Reload Accounts Table
+
+		// Reload Accounts Table
 		request.setAttribute("accounts_accounts-list", database.retrieveAccounts());
-		
+
 		return "redirect:accounts";
+	}
+
+	// Simply selects the accounts view to render by returning its name.
+	@RequestMapping(value = { "/accounts_reloadtable" }, method = RequestMethod.POST)
+	public @ResponseBody String accounts_reloadtable(Model model, HttpSession session, @ModelAttribute("accountBean") AccountBean accountBean,
+			HttpServletResponse response, HttpServletRequest request) {
+		logger.info("A user has reloaded accounts table.");
+		String script = "<script>";
+		Database database = new Database();
+		request.setAttribute("accounts_accounts-list", database.retrieveAccounts());
+		ArrayList<ArrayList<String>> accounts = (ArrayList<ArrayList<String>>) request.getAttribute("accounts_accounts-list");
+		script = script.concat("var dataSet = [");
+		for(int i=0; i<accounts.size(); i++){
+			ArrayList<String> record = accounts.get(i);
+			script = script.concat("[");
+			script = script.concat("'" + record.get(0) + "',");
+			script = script.concat("'" + record.get(1) + "',");
+			script = script.concat("'" + record.get(2) + "',");
+			script = script.concat("'" + record.get(3) + "'");
+			script = script.concat("]");
+			if(i<accounts.size()-1){
+				script = script.concat(",");
+			}
+		}
+		script = script.concat("];");
+		script = script.concat("$('table').DataTable().destroy();");
+		script = script.concat("$('table').DataTable( { data: dataSet, dom: '<\"top\"fl<\"clear\">>rt<\"bottom\"ip<\"clear\">>', oLanguage: { sSearch: \"\", sLengthMenu: \"_MENU_\" }, initComplete: function initComplete(settings, json) {$('div.dataTables_filter input').attr('placeholder', 'Search...'); } } );");
+		script = script.concat("</script>");
+		return script;
 	}
 
 }

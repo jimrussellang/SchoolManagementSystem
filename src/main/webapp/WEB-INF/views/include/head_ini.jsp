@@ -10,3 +10,6 @@
  
  <!-- Custom -->
  <link rel="stylesheet" type="text/css" href="<c:url value="/resources/assets/css/custom.css" />">
+
+ <!-- Switch -->
+<link href="<c:url value="/resources/assets/css/bootstrap-switch.css" />" rel="stylesheet">
