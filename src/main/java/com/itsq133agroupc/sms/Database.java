@@ -347,7 +347,9 @@ public class Database {
 	{
 		try{
 			connect();
-			String query = "UPDATE 'accounts' SET UserName = '" + userName + "', Password = '" + pass + "', AccountType = '" + accountType + "'";
+			pass = new StrongPasswordEncryptor().encryptPassword(pass);
+			String query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', AccountType = '" + accountType + 
+					"'  WHERE userID ='" + userID + "'";
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
 				return true;
