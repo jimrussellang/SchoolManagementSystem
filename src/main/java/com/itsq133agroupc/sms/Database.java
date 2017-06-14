@@ -333,6 +333,25 @@ public class Database {
 		}
 		return false;
 	}
+	
+	
+	public boolean editAccount(String userID, String userName, String accountType, String pass)
+	{
+		try{
+			connect();
+			pass = new StrongPasswordEncryptor().encryptPassword(pass);
+			String query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', AccountType = '" + accountType + 
+					"'  WHERE userID ='" + userID + "'";
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		}
+	catch(Exception e){
+		System.out.println("Error: " + e);
+	}
+		return false;
+	}
 
 	public boolean deleteAccount(String userID) {
 		try {

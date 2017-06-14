@@ -31,7 +31,7 @@ public class HomeController {
 	// Simply selects the home view to render by returning its name.
 	@RequestMapping(value = { "/", "home" }, method = RequestMethod.GET)
 	public String home(Locale locale, Model model, HttpSession session, HttpServletResponse response, HttpServletRequest request) {
-		logger.info("Welcome home! The client locale is {}.", locale);
+		logger.info("Welcome home! The client locale is {} kevin apostol.", locale);
 		//System.out.println(new Database().addSchoolAccount());
 		System.out.println("HELLO!");
 		Date date = new Date();
@@ -51,7 +51,7 @@ public class HomeController {
 		
 		//Attribute used for printing the page title
 		model.addAttribute("page_title", "Dashboard");
-
+		
 		return "home";
 	}
 
@@ -59,7 +59,6 @@ public class HomeController {
 	@RequestMapping(value = { "setup" }, method = RequestMethod.GET)
 	public String setup(Locale locale, Model model, HttpSession session, HttpServletResponse response) {
 		logger.info("System Setup is being accessed...");
-
 		return "setup";
 	}
 
@@ -68,6 +67,7 @@ public class HomeController {
 	public @ResponseBody String setupIni(Locale locale, Model model, HttpSession session, HttpServletResponse response) {
 		logger.info("Setting up system...");
 
+		
 		Database db = new Database();
 		db.initializeDatabase();
 		
