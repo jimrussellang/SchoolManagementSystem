@@ -31,7 +31,7 @@ public class HomeController {
 	// Simply selects the home view to render by returning its name.
 	@RequestMapping(value = { "/", "home" }, method = RequestMethod.GET)
 	public String home(Locale locale, Model model, HttpSession session, HttpServletResponse response, HttpServletRequest request) {
-		logger.info("Welcome home! The client locale is {}.", locale);
+		logger.info("Welcome home! The client locale is {} kevin apostol.", locale);
 		//System.out.println(new Database().addSchoolAccount());
 		System.out.println("HELLO!");
 		Date date = new Date();

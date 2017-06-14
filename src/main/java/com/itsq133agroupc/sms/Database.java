@@ -341,6 +341,21 @@ public class Database {
 		}
 		return false;
 	}
+	public boolean editAccount(String userID, String userName, String accountType, String pass)
+	{
+		try{
+			connect();
+			String query = "UPDATE 'accounts' SET UserName = '" + userName + "', Password = '" + pass + "', AccountType = '" + accountType + "'";
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		}
+	catch(Exception e){
+		System.out.println("Error: " + e);
+	}
+		return false;
+	}
 
 	public boolean deleteAccount(String userID) {
 		try {
