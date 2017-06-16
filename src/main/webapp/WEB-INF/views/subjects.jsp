@@ -33,7 +33,7 @@
 				</button>
 				<div class="toggle-content">
 					<ul class="actions">
-						<!-- <li><a onClick="reloadTable()">Refresh</a></li> -->
+						<li><a onClick="reloadTable()">Refresh</a></li>
 						<li><a onClick="closeFloatingButton()" href="#" data-toggle="modal" data-target="#addModal">Add new subject</a></li>
 						<li><a onClick="editMode()">Edit existing subject</a></li>
 						<li><a onClick="deleteMode()">Delete existing subject</a></li>
