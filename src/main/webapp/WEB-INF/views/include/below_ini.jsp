@@ -9,6 +9,8 @@
 <script src="<c:url value="/resources/assets/js/nanobar.js" />"></script>
 <script src="<c:url value="/resources/assets/js/bootstrap-switch.js" />"></script>
 
+
+
 <script>
 	var nanobar = new Nanobar({
 		target : document.getElementById('nanobar-container')
@@ -23,7 +25,7 @@
 				loadPage();
 			}
 		} catch (e) {
-			
+
 		}
 		return true;
 	});
@@ -37,31 +39,36 @@
 	if ('${param.notify_msg}' != '') {
 		$.notify("${param.notify_msg}", '${param.notify_msg_state}');
 	}
-	
+
 	//Jquery functions for ReplaceTag
 	$.extend({
-	    replaceTag: function (currentElem, newTagObj, keepProps) {
-	        var $currentElem = $(currentElem);
-	        var i, $newTag = $(newTagObj).clone();
-	        if (keepProps) {//{{{
-	            newTag = $newTag[0];
-	            newTag.className = currentElem.className;
-	            $.extend(newTag.classList, currentElem.classList);
-	            $.extend(newTag.attributes, currentElem.attributes);
-	        }//}}}
-	        $currentElem.wrapAll($newTag);
-	        $currentElem.contents().unwrap();
-	        // return node; (Error spotted by Frank van Luijn)
-	        return this; // Suggested by ColeLawrence
-	    }
+		replaceTag : function(currentElem, newTagObj, keepProps) {
+			var $currentElem = $(currentElem);
+			var i, $newTag = $(newTagObj).clone();
+			if (keepProps) {//{{{
+				newTag = $newTag[0];
+				newTag.className = currentElem.className;
+				$.extend(newTag.classList, currentElem.classList);
+				$.extend(newTag.attributes, currentElem.attributes);
+			}//}}}
+			$currentElem.wrapAll($newTag);
+			$currentElem.contents().unwrap();
+			// return node; (Error spotted by Frank van Luijn)
+			return this; // Suggested by ColeLawrence
+		}
 	});
 
 	$.fn.extend({
-	    replaceTag: function (newTagObj, keepProps) {
-	        // "return" suggested by ColeLawrence
-	        return this.each(function() {
-	            jQuery.replaceTag(this, newTagObj, keepProps);
-	        });
-	    }
+		replaceTag : function(newTagObj, keepProps) {
+			// "return" suggested by ColeLawrence
+			return this.each(function() {
+				jQuery.replaceTag(this, newTagObj, keepProps);
+			});
+		}
+	});
+
+	//Tooltips
+	$(document).ready(function() {
+		$('[data-toggle="tooltip"]').tooltip();
 	});
 </script>
