@@ -44,6 +44,9 @@ public class LoginController {
 			boolean is_validaccount = database.loginAccount(loginBean.getUsername(), loginBean.getPassword());
             if (is_validaccount) {
             	session.setAttribute("login_userid", database.getAccountUserID(loginBean.getUsername()));
+            	session.setAttribute("login_accounttype", database.getAccountType(loginBean.getUsername()));
+            	session.setAttribute("login_fullname", database.getAccountFullName(loginBean.getUsername()));
+            	session.setAttribute("login_username", loginBean.getUsername());
             	if(session.getAttribute("pageforward") != null){
             		String pageforward = session.getAttribute("pageforward").toString();
             		session.removeAttribute("pageforward");

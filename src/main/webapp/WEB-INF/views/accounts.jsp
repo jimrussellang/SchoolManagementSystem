@@ -37,12 +37,12 @@
 						<li><a onClick="closeFloatingButton()" href="#"
 							data-toggle="modal" data-target="#addModal">Add new account</a></li>
 						<li><a onClick="editMode()">Edit existing accounts</a></li>
-						<li><a onClick="deleteMode()">Delete
-								existing accounts</a></li>
+						<li><a onClick="deleteMode()">Delete existing accounts</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="btn-floating" id="help-actions-cancel" style="display: none;">
+			<div class="btn-floating" id="help-actions-cancel"
+				style="display: none;">
 				<div class="btn-bg"></div>
 				<button type="button" class="btn btn-default btn-toggle"
 					data-toggle="toggle" data-target="#help-actions-cancel">
@@ -59,34 +59,46 @@
 				<div class="col-xs-12">
 					<div class="card">
 						<div class="card-header">
-							Accounts List&nbsp;
-							<kbd style="display: none;" id="mode"></kbd>
+							<div class="hidden-xs">
+								Accounts List&nbsp;
+								<kbd style="display: none;" id="mode"></kbd>
+							</div>
+							<div class="visible-xs hidden-md">
+								<br>
+								<br>
+							</div>
 						</div>
 						<div id="edit_container" style="display: none;"
 							class="container-fluid">
 							<div class="alert alert-success"
 								style="overflow: hidden; white-space: nowrap;">
-								<strong>You're in Edit Mode!</strong> Highlight all records to be modified
-								by clicking on them. Then, click on the "Edit Selected Records"
-								to begin editing.
+								<strong>You're in Edit Mode!</strong> <a href="#"
+									data-toggle="tooltip"
+									title="Highlight all records to be modified
+								by clicking on them. Then, click on the 'Edit Selected Records'
+								to begin editing."><button
+										class="btn btn-xs btn-primary">?</button></a>
 							</div>
 							<div class="container-fluid">
-								<button onClick="startEdit()" id="btn_editselrecs" class="btn btn-sm btn-primary">Edit
-									Selected Records</button>
+								<button onClick="startEdit()" id="btn_editselrecs"
+									class="btn btn-sm btn-primary">Edit Selected Records</button>
 							</div>
 						</div>
-						
+
 						<div id="delete_container" style="display: none;"
 							class="container-fluid">
 							<div class="alert alert-warning"
 								style="overflow: hidden; white-space: nowrap;">
-								<strong>You're in Delete Mode!</strong> Highlight all records to be deleted
-								by clicking on them. Then, click on the "Delete Selected Records"
-								to delete all selected records. NOTE: Once you delete them, it CANNOT BE UNDONE!
+								<strong>You're in Delete Mode!</strong> <a href="#"
+									data-toggle="tooltip"
+									title="Highlight all records to be deleted
+								by clicking on them. Then, click on the 'Delete Selected Records'
+								to delete all selected records. NOTE: Once you delete them, it CANNOT BE UNDONE!"><button
+										class="btn btn-xs btn-primary">?</button></a>
 							</div>
 							<div class="container-fluid">
-								<button id="btn_deleteselrecs" class="btn btn-sm btn-danger">Delete
-									Selected Records</button>
+								<button id="btn_deleteselrecs" onClick="startDelete()"
+									class="btn btn-sm btn-danger">Delete Selected Records</button>
 							</div>
 						</div>
 
@@ -110,6 +122,7 @@
 									<tr>
 										<th>User ID</th>
 										<th>User Name</th>
+										<th>Full Name</th>
 										<th>Account Type</th>
 										<th>Date Registered</th>
 									</tr>
@@ -188,6 +201,13 @@
 									</div>
 								</div>
 								<div class="form-group">
+									<label class="col-md-3 control-label">Full Name</label>
+									<div class="col-md-9">
+										<input id="add_fullname" name="fullname" type="text"
+											class="form-control" placeholder="">
+									</div>
+								</div>
+								<div class="form-group">
 									<label class="col-md-3 control-label">Account Type</label>
 									<div class="col-md-4">
 										<div class="input-group">
@@ -246,13 +266,13 @@
 									<label class="col-md-3 control-label">Password</label>
 									<div class="col-md-9">
 										<input id="edit_password" name="password" type="password"
-											class="form-control" placeholder="">
+											class="form-control" placeholder="(unchanged)">
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-md-3 control-label">Re-enter Password</label>
+									<label class="col-md-3 control-label">Full Name</label>
 									<div class="col-md-9">
-										<input id="edit_repassword" name="repassword" type="password"
+										<input id="edit_fullname" name="fullname" type="text"
 											class="form-control" placeholder="">
 									</div>
 								</div>
@@ -275,7 +295,7 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-sm btn-default"
 						data-toggle="modal" data-target="#editCloseModal">Close</button>
-					<button onClick="highlight_users_count++;" type="button"
+					<button onClick="confirmEdit()" type="button"
 						class="btn btn-sm btn-success">Save</button>
 				</div>
 			</div>
@@ -292,19 +312,39 @@
 					</button>
 					<h4 class="modal-title">Confirm Cancel</h4>
 				</div>
-				<div class="modal-body">
-					Cancel editing?
-				</div>
+				<div class="modal-body">Cancel editing?</div>
 				<div class="modal-footer">
-					<button type="button" onClick="startEdit()" class="btn btn-sm btn-default"
-						data-dismiss="modal">No</button>
+					<button type="button" onClick="startEdit()"
+						class="btn btn-sm btn-default" data-dismiss="modal">No</button>
 					<button type="button" onClick="cancelEdit()"
 						class="btn btn-sm btn-success" data-dismiss="modal">Yes</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+	<div class="modal fade" id="deleteModal" role="dialog"
+		aria-labelledby="addModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Confirm Delete</h4>
+				</div>
+				<div class="modal-body">Are you sure you want to delete the
+					selected records?</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default"
+						data-dismiss="modal">No</button>
+					<button type="button" onClick="confirmDelete()"
+						class="btn btn-sm btn-success" data-dismiss="modal">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- AJAX RESULT CONTAINER -->
 	<div id="ajax_result"></div>
 
@@ -337,24 +377,28 @@
 				$("#table_container").addClass("__loading");
 			}
 		}
-		function reloadTable(){
+		function reloadTable() {
 			closeFloatingButton();
 			toggleTableLoad();
 			$('table').DataTable().clear().draw();
-			$.ajax({
-				type : 'POST',
-				url : 'accounts_reloadtable',
-				success : function(data) {
-					$('#ajax_result').html(data);
-					toggleTableLoad();
-					$('table tr td:first-child').replaceTag("<th scope='row'>", false);
-				},
-				error : function(data) {
-					//$('#result').html(data);
-					alert(data);
-				}
-			});
-			
+			$
+					.ajax({
+						type : 'POST',
+						url : 'accounts_reloadtable',
+						success : function(data) {
+							$('#ajax_result').html(data);
+							toggleTableLoad();
+							if ($('table tr td:first-child').text() != "No data available in table") {
+								$('table tr td:first-child').replaceTag(
+										"<th scope='row'>", false);
+							}
+						},
+						error : function(data) {
+							//$('#result').html(data);
+							alert(data);
+						}
+					});
+
 		}
 		function addAccount() {
 			if ($("#add_password").val() == $("#add_repassword").val()) {
@@ -363,6 +407,7 @@
 		}
 		var highlight_userids = [];
 		var highlight_usernames = [];
+		var highlight_fullnames = [];
 		var highlight_accttypes = [];
 		function toggleTableHighlighter(state) {
 			//State 0 turns off Table Highlighter feature completely
@@ -379,10 +424,12 @@
 						function(event) {
 							highlight_userids[0] = $(this).children('th')
 									.text();
-							highlight_usernames[0] = $(this).children('td:eq(0)')
-							.text();
-							highlight_accttypes[0] = $(this).children('td:eq(1)')
-							.text();
+							highlight_usernames[0] = $(this).children(
+									'td:eq(0)').text();
+							highlight_fullnames[0] = $(this).children(
+							'td:eq(1)').text();
+							highlight_accttypes[0] = $(this).children(
+									'td:eq(2)').text();
 							$(this).addClass('highlight').siblings()
 									.removeClass('highlight');
 						});
@@ -398,19 +445,25 @@
 											if (highlight_userids[i] == $(this)
 													.children('th').text()) {
 												highlight_userids.splice(i, 1);
-												highlight_usernames.splice(i, 1);
-												highlight_accttypes.splice(i, 1);
-												
+												highlight_usernames
+														.splice(i, 1);
+												highlight_fullnames
+														.splice(i, 1);
+												highlight_accttypes
+														.splice(i, 1);
+
 											}
 										}
 										$(this).removeClass('highlight')
 									} else {
 										highlight_userids.push($(this)
 												.children('th').text());
-										highlight_usernames.push($(this).children('td:eq(0)')
-										.text());
-										highlight_accttypes.push($(this).children('td:eq(1)')
-										.text());
+										highlight_usernames.push($(this)
+												.children('td:eq(0)').text());
+										highlight_fullnames.push($(this)
+												.children('td:eq(1)').text());
+										highlight_accttypes.push($(this)
+												.children('td:eq(2)').text());
 										$(this).addClass('highlight');
 									}
 								});
@@ -434,32 +487,90 @@
 		var highlight_users_count = 0;
 		var highlight_users_count_total = 0;
 		function startEdit() {
-			highlight_users_count = 0;
-			highlight_users_count_total = highlight_userids.length;
-			$("#edit_userid").val(highlight_userids[highlight_users_count]);
-			$("#edit_username").val(highlight_usernames[highlight_users_count]);
-			$("#edit_accttype").val(highlight_accttypes[highlight_users_count]).change();
-			$('#editModal').modal({
-			    backdrop: 'static',
-			    keyboard: false
-			})
-			$('#editModal').on('hidden.bs.modal', function(){
-				if(highlight_users_count < highlight_users_count_total){
-					$("#edit_userid").val(highlight_userids[highlight_users_count]);
-					$("#edit_username").val(highlight_usernames[highlight_users_count]);
-					$("#edit_accttype").val(highlight_accttypes[highlight_users_count]).change();
-					$('#editModal').modal({
-					    backdrop: 'static',
-					    keyboard: false
-					})
-				}
-			});
+			if (highlight_userids.length > 0) {
+				highlight_users_count = 0;
+				highlight_users_count_total = highlight_userids.length;
+				$("#edit_userid").val(highlight_userids[highlight_users_count]);
+				$("#edit_username").val(
+						highlight_usernames[highlight_users_count]);
+				$("#edit_fullname").val(
+						highlight_fullnames[highlight_users_count]);
+				$("#edit_accttype").val(
+						highlight_accttypes[highlight_users_count]).change();
+				$('#editModal').modal({
+					backdrop : 'static',
+					keyboard : false
+				})
+				$('#editModal')
+						.on(
+								'hidden.bs.modal',
+								function() {
+									$("#edit_userid").val("");
+									$("#edit_username").val("");
+									$("#edit_password").val("");
+									$("#edit_accttype :nth-child(0)").prop('selected', true);
+									if (highlight_users_count < highlight_users_count_total) {
+										$("#edit_userid")
+												.val(
+														highlight_userids[highlight_users_count]);
+										$("#edit_username")
+												.val(
+														highlight_usernames[highlight_users_count]);
+										$("#edit_fullname")
+												.val(
+														highlight_fullnames[highlight_users_count]);
+										$("#edit_accttype")
+												.val(
+														highlight_accttypes[highlight_users_count])
+												.change();
+										$('#editModal').modal({
+											backdrop : 'static',
+											keyboard : false
+										})
+									}
+									else{
+										cancelAnyMode();
+										highlight_userids = [];
+										highlight_usernames = [];
+										highlight_fullnames = [];
+										highlight_accttypes = [];
+									}
+								});
+			}
 		}
-		function cancelEdit(){
+		function cancelEdit() {
 			$('#editModal').off('hidden.bs.modal');
 			$('#editModal').modal('hide');
 		}
-		function cancelAnyMode(){
+		function confirmEdit() {
+			$("#editform").notify('Saving...', {
+				className:'info',
+				clickToHide: false,
+				autoHide: false
+			});
+			$("#edit_userid").prop("disabled", false);
+			var editform_values = $("#editform").serialize();
+			$("#edit_userid").prop("disabled", true);
+			setTimeout(function() {
+			$.ajax({
+				type : 'POST',
+				data : editform_values,
+				url : 'accounts_edit',
+				success : function(data) {
+					highlight_users_count++;
+					$('.notifyjs-wrapper').trigger('notify-hide');
+					$("#editModal").modal("hide");
+					$('#ajax_result').html(data);
+					reloadTable();
+				},
+				error : function(data) {
+					//$('#result').html(data);
+					alert(data);
+				}
+			});
+			}, 1500);
+		}
+		function cancelAnyMode() {
 			$('#help-actions').show(500);
 			$('#help-actions-cancel').hide();
 			toggleTableHighlighter(0);
@@ -476,6 +587,39 @@
 			$('#mode').show();
 			$('#mode').text("DELETE MODE");
 			$('#delete_container').show(1000);
+		}
+		function startDelete() {
+			if (highlight_userids.length > 0) {
+				$('#deleteModal').modal('show');
+			}
+		}
+		function confirmDelete() {
+			$.notify('Deleting records...', {
+				className:'info',
+				clickToHide: false,
+				autoHide: false
+			});
+			$.ajax({
+				type : 'POST',
+				data : {
+					userids : String(highlight_userids)
+				},
+				url : 'accounts_delete',
+				success : function(data) {
+					$('.notifyjs-wrapper').trigger('notify-hide');
+					$('#ajax_result').html(data);
+					cancelAnyMode();
+					highlight_userids = [];
+					highlight_usernames = [];
+					highlight_fullnames = [];
+					highlight_accttypes = [];
+					reloadTable();
+				},
+				error : function(data) {
+					//$('#result').html(data);
+					alert(data);
+				}
+			});
 		}
 	</script>
 </body>

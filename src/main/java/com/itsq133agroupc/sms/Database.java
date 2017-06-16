@@ -145,7 +145,7 @@ public class Database {
 			
 			// If Accounts table does not exist, create one
 			if (!has_accounts) {
-				query = "CREATE TABLE accounts ( UserID int NOT NULL, UserName text NOT NULL, Password text NOT NULL, AccountType text NOT NULL, Parameters text, DateRegistered datetime NOT NULL, PRIMARY KEY (UserID) )";
+				query = "CREATE TABLE accounts ( UserID int NOT NULL UNIQUE, UserName varchar(255) NOT NULL UNIQUE, Password text NOT NULL, FullName text NOT NULL, AccountType text NOT NULL, Parameters text, DateRegistered datetime NOT NULL, Status int NOT NULL DEFAULT 1, PRIMARY KEY (UserID) )";
 				stmt.execute(query);
 				System.out.println("Accounts Table is now configured.");
 			} else {
@@ -155,9 +155,11 @@ public class Database {
 				boolean has_accounts_userid = false;
 				boolean has_accounts_username = false;
 				boolean has_accounts_password = false;
+				boolean has_accounts_fullname = false;
 				boolean has_accounts_accounttype = false;
 				boolean has_accounts_parameters = false;
 				boolean has_accounts_dateregistered = false;
+				boolean has_accounts_status = false;
 				while(rs.next()){
 					if (rs.getString("Field").equals("UserID")) {
 						has_accounts_userid = true;
@@ -168,6 +170,9 @@ public class Database {
 					if (rs.getString("Field").equals("Password")) {
 						has_accounts_password = true;
 					}
+					if (rs.getString("Field").equals("FullName")) {
+						has_accounts_fullname = true;
+					}
 					if (rs.getString("Field").equals("AccountType")) {
 						has_accounts_accounttype = true;
 					}
@@ -176,6 +181,9 @@ public class Database {
 					}
 					if (rs.getString("Field").equals("DateRegistered")) {
 						has_accounts_dateregistered = true;
+					}
+					if (rs.getString("Field").equals("Status")) {
+						has_accounts_status = true;
 					}
 				}
 				//Check if Accounts Table has the correct primary key
@@ -198,11 +206,15 @@ public class Database {
 					stmt.execute(query);
 				}
 				if(!has_accounts_username){
-					query = "ALTER TABLE accounts ADD COLUMN UserName text NOT NULL";
+					query = "ALTER TABLE accounts ADD COLUMN UserName varchar(255) NOT NULL UNIQUE";
 					stmt.execute(query);
 				}
 				if(!has_accounts_password){
 					query = "ALTER TABLE accounts ADD COLUMN Password text NOT NULL";
+					stmt.execute(query);
+				}
+				if(!has_accounts_fullname){
+					query = "ALTER TABLE accounts ADD COLUMN FullName text NOT NULL";
 					stmt.execute(query);
 				}
 				if(!has_accounts_accounttype){
@@ -215,6 +227,10 @@ public class Database {
 				}
 				if(!has_accounts_dateregistered){
 					query = "ALTER TABLE accounts ADD COLUMN DateRegistered datetime NOT NULL";
+					stmt.execute(query);
+				}
+				if(!has_accounts_status){
+					query = "ALTER TABLE accounts ADD COLUMN Status int NOT NULL DEFAULT 1";
 					stmt.execute(query);
 				}
 				System.out.println("Accounts table is now configured correctly!");
@@ -275,18 +291,63 @@ public class Database {
 
 		return userid;
 	}
+	
+	public String getAccountType(String username) {
+		String accounttype = "";
+		try {
+			connect();
+			String query = null;
+			if (username.equals("admin")) {
+				accounttype = "admin";
+			} else {
+				query = "SELECT * FROM accounts WHERE UserName ='" + username + "'";
+			}
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next() && rs.last()) {
+				accounttype = rs.getString("AccountType");
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+
+		return accounttype;
+	}
+	
+	public String getAccountFullName(String username) {
+		String fullname = "";
+		try {
+			connect();
+			String query = null;
+			if (username.equals("admin")) {
+				fullname = "-SUPERADMIN-";
+			} else {
+				query = "SELECT * FROM accounts WHERE UserName ='" + username + "'";
+			}
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next() && rs.last()) {
+				fullname = rs.getString("FullName");
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+
+		return fullname;
+	}
 
 	public ArrayList<ArrayList<String>> retrieveAccounts() {
 		ArrayList<ArrayList<String>> accounts = new ArrayList<ArrayList<String>>();
 		try {
 			connect();
-			String query = "SELECT * FROM accounts";
+			String query = "SELECT * FROM accounts WHERE Status = 1";
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				ArrayList<String> record = new ArrayList<String>();
 				record.add(rs.getString("UserID"));
 				record.add(rs.getString("UserName"));
+				record.add(rs.getString("FullName"));
 				record.add(rs.getString("AccountType"));
 				record.add(rs.getString("DateRegistered"));
 				accounts.add(record);
@@ -297,7 +358,7 @@ public class Database {
 		return accounts;
 	}
 
-	public boolean addAccount(String userID, String userName, String accountType, String pass) {
+	public boolean addAccount(String userID, String userName, String accountType, String pass, String fullName) {
 
 		try {
 			connect();
@@ -318,9 +379,9 @@ public class Database {
 			else
 				pass = spwd.encryptPassword(pass);
 
-			String query = "INSERT INTO `accounts` " + "(`UserID`, " + "`UserName`, " + "`Password`, "
+			String query = "INSERT INTO `accounts` " + "(`UserID`, " + "`UserName`, " + "`Password`, " + "`FullName`, "
 					+ "`AccountType`, " + "`DateRegistered`) " + "VALUES ('" + userID + "', " + "'" + userName + "', "
-					+ "'" + pass + "', " + "'" + accountType + "', " + "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
+					+ "'" + pass + "', " + "'" + fullName + "', " + "'" + accountType + "', " + "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
 																												// UTC
 																												// -8)
 			int res = con.createStatement().executeUpdate(query);
@@ -335,13 +396,21 @@ public class Database {
 	}
 	
 	
-	public boolean editAccount(String userID, String userName, String accountType, String pass)
+	public boolean editAccount(String userID, String userName, String accountType, String pass, String fullName)
 	{
 		try{
 			connect();
-			pass = new StrongPasswordEncryptor().encryptPassword(pass);
-			String query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', AccountType = '" + accountType + 
-					"'  WHERE userID ='" + userID + "'";
+			String query = "";
+			
+			if(pass.length() > 0){
+				pass = new StrongPasswordEncryptor().encryptPassword(pass);
+				query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', FullName = '" + fullName + "', AccountType = '" + accountType + 
+						"'  WHERE userID ='" + userID + "'";
+			}
+			else{
+				query = "UPDATE `accounts` SET UserName = '" + userName + "', FullName = '" + fullName + "', AccountType = '" + accountType + 
+						"'  WHERE userID ='" + userID + "'";
+			}
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
 				return true;
@@ -355,7 +424,7 @@ public class Database {
 
 	public boolean deleteAccount(String userID) {
 		try {
-			String query = "DELETE FROM `accounts` WHERE `accounts`.`UserID` = " + userID;
+			String query = "UPDATE `accounts` SET Status = 0 WHERE `accounts`.`UserID` = " + userID;
 			connect();
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
