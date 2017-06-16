@@ -326,7 +326,7 @@
 				$("#table_container").addClass("__loading");
 			}
 		}
-/* 		function reloadTable(){
+ 		function reloadTable(){
 			closeFloatingButton();
 			toggleTableLoad();
 			$('table').DataTable().clear().draw();
@@ -343,7 +343,7 @@
 					alert(data);
 				}
 			});
-		} */
+		} 
 		function addSubject() {
 			if ( $('#add_coursecode').val() != '' && $('#add_coursename').val() != '' && $('#add_courseunits').val() != ''){
 				var subjectData = $('#addform').serialize(); 

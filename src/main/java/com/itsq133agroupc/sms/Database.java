@@ -367,7 +367,7 @@ public class Database {
 			if (userID.trim().isEmpty())
 				userID = "" + (new Random()).nextInt(9999); // random UserID
 			if (userName.trim().isEmpty())
-				userName = new BigInteger(64, (new SecureRandom())).toString(32); // random
+				userName = new BigInteger(64, (new SecureRandom())).toString(32); // randueuwqio
 																					// Username
 			if (accountType.trim().isEmpty())
 				accountType = "School" + (new Random()).nextInt(100) + "-" + "6000"; // random
