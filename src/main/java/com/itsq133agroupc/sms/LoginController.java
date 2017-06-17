@@ -31,6 +31,8 @@ public class LoginController {
 	public String login(Locale locale, Model model) {
 		logger.info("A user has accessed the Login page.");
 		
+		// Attribute used for printing the page title
+		model.addAttribute("page_title", "Login");
 		return "login";
 	}
 	

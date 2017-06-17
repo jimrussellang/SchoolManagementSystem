@@ -113,21 +113,21 @@
 									</tr>
 								</thead>
 								<tbody>
-									<%-- <c:forEach var="accounts"
-										items='${requestScope["accounts_accounts-list"]}'>
+									<c:forEach var="subjects"
+										items='${requestScope["subjects_subjects-list"]}'>
 										<tr>
-											<c:forEach var="records" items="${accounts}" varStatus="loop">
+											<c:forEach var="subject" items="${subjects}" varStatus="loop">
 												<c:choose>
 													<c:when test="${loop.index=='0'}">
-														<th scope="row"><c:out value="${records}" /></th>
+														<th scope="row"><c:out value="${subject}" /></th>
 													</c:when>
 													<c:otherwise>
-														<td><c:out value="${records}" /></td>
+														<td><c:out value="${subject}" /></td>
 													</c:otherwise>
 												</c:choose>
 											</c:forEach>
 										</tr>
-									</c:forEach> --%>
+									</c:forEach>
 								</tbody>
 							</table>
 						</div>
@@ -349,7 +349,7 @@
 				var subjectData = $('#addform').serialize(); 
 				$.ajax({
 					type: 'POST',
-					url: 'subject_add',
+					url: 'subjects_add',
 					data: subjectData,
 					cache: false,
 					success: function(data){

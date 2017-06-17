@@ -54,6 +54,7 @@ public class Database {
 
 			boolean has_rootaccount = false;
 			boolean has_accounts = false;
+			boolean has_courses = false;
 			while (rs.next()) {
 				count++;
 				tables.add(rs.getString("table_name"));
@@ -65,6 +66,10 @@ public class Database {
 				// Check if Accounts table exists
 				if (rs.getString("table_name").equals("accounts")) {
 					has_accounts = true;
+				}
+				// Check if Courses table exists
+				if (rs.getString("table_name").equals("courses")) {
+					has_courses = true;
 				}
 			}
 
@@ -130,8 +135,7 @@ public class Database {
 						System.out.println(
 								"Root Account was not found, therefore, a reinitialization was executed. Root Account is now correctly configured.");
 					}
-				}
-				else{
+				} else {
 					query = "DROP TABLE root_account";
 					stmt.execute(query);
 					query = "CREATE TABLE root_account ( UserID int NOT NULL, UserName varchar(5) NOT NULL UNIQUE, Password varchar(100) NOT NULL, PRIMARY KEY (UserID) )";
@@ -139,10 +143,11 @@ public class Database {
 					query = "INSERT INTO root_account ( UserID, UserName, Password ) VALUES ( 0, '" + root_user + "', '"
 							+ passwordEncryptor.encryptPassword(root_pass) + "' )";
 					stmt.execute(query);
-					System.out.println("Root Account Table is configured incorrectly, therefore, a reconfiguration was executed. Root Table is now correctly configured.");
+					System.out.println(
+							"Root Account Table is configured incorrectly, therefore, a reconfiguration was executed. Root Table is now correctly configured.");
 				}
 			}
-			
+
 			// If Accounts table does not exist, create one
 			if (!has_accounts) {
 				query = "CREATE TABLE accounts ( UserID int NOT NULL UNIQUE, UserName varchar(255) NOT NULL UNIQUE, Password text NOT NULL, FullName text NOT NULL, AccountType text NOT NULL, Parameters text, DateRegistered datetime NOT NULL, Status int NOT NULL DEFAULT 1, PRIMARY KEY (UserID) )";
@@ -160,7 +165,7 @@ public class Database {
 				boolean has_accounts_parameters = false;
 				boolean has_accounts_dateregistered = false;
 				boolean has_accounts_status = false;
-				while(rs.next()){
+				while (rs.next()) {
 					if (rs.getString("Field").equals("UserID")) {
 						has_accounts_userid = true;
 					}
@@ -186,54 +191,139 @@ public class Database {
 						has_accounts_status = true;
 					}
 				}
-				//Check if Accounts Table has the correct primary key
+				// Check if Accounts Table has the correct primary key
 				boolean has_accounts_primarykey = false;
 				query = "SHOW INDEX FROM accounts";
 				rs = stmt.executeQuery(query);
-				if(rs.next()){
-					if(rs.getString("Column_name").equals("UserID")){
+				if (rs.next()) {
+					if (rs.getString("Column_name").equals("UserID")) {
 						has_accounts_primarykey = true;
 					}
 				}
-				if(!has_accounts_userid){
+				if (!has_accounts_userid) {
 					query = "ALTER TABLE accounts ADD COLUMN UserID int";
 					stmt.execute(query);
 					query = "ALTER TABLE accounts ADD PRIMARY KEY(UserID)";
 					stmt.execute(query);
 				}
-				if(!has_accounts_primarykey){
+				if (!has_accounts_primarykey) {
 					query = "ALTER TABLE accounts ADD PRIMARY KEY(UserID)";
 					stmt.execute(query);
 				}
-				if(!has_accounts_username){
+				if (!has_accounts_username) {
 					query = "ALTER TABLE accounts ADD COLUMN UserName varchar(255) NOT NULL UNIQUE";
 					stmt.execute(query);
 				}
-				if(!has_accounts_password){
+				if (!has_accounts_password) {
 					query = "ALTER TABLE accounts ADD COLUMN Password text NOT NULL";
 					stmt.execute(query);
 				}
-				if(!has_accounts_fullname){
+				if (!has_accounts_fullname) {
 					query = "ALTER TABLE accounts ADD COLUMN FullName text NOT NULL";
 					stmt.execute(query);
 				}
-				if(!has_accounts_accounttype){
+				if (!has_accounts_accounttype) {
 					query = "ALTER TABLE accounts ADD COLUMN AccountType text NOT NULL";
 					stmt.execute(query);
 				}
-				if(!has_accounts_parameters){
+				if (!has_accounts_parameters) {
 					query = "ALTER TABLE accounts ADD COLUMN Parameters text";
 					stmt.execute(query);
 				}
-				if(!has_accounts_dateregistered){
+				if (!has_accounts_dateregistered) {
 					query = "ALTER TABLE accounts ADD COLUMN DateRegistered datetime NOT NULL";
 					stmt.execute(query);
 				}
-				if(!has_accounts_status){
+				if (!has_accounts_status) {
 					query = "ALTER TABLE accounts ADD COLUMN Status int NOT NULL DEFAULT 1";
 					stmt.execute(query);
 				}
 				System.out.println("Accounts table is now configured correctly!");
+			}
+
+			// If Courses table does not exist, create one
+			if (!has_courses) {
+				query = "CREATE TABLE courses ( CourseID int NOT NULL UNIQUE, CourseCode varchar(255) NOT NULL UNIQUE, CourseName text NOT NULL, CourseUnits float NOT NULL DEFAULT 0, Prerequisites text, Price float NOT NULL DEFAULT 0, Status int NOT NULL DEFAULT 1, PRIMARY KEY (CourseID) )";
+				stmt.execute(query);
+				System.out.println("Courses Table is now configured.");
+			} else {
+				// Check if Courses Table has the correct columns
+				query = "DESCRIBE courses";
+				rs = stmt.executeQuery(query);
+				boolean has_courses_courseid = false;
+				boolean has_courses_coursecode = false;
+				boolean has_courses_coursename = false;
+				boolean has_courses_courseunits = false;
+				boolean has_courses_prerequisites = false;
+				boolean has_courses_price = false;
+				boolean has_courses_status = false;
+				while (rs.next()) {
+					if (rs.getString("Field").equals("CourseID")) {
+						has_courses_courseid = true;
+					}
+					if (rs.getString("Field").equals("CourseCode")) {
+						has_courses_coursecode = true;
+					}
+					if (rs.getString("Field").equals("CourseName")) {
+						has_courses_coursename = true;
+					}
+					if (rs.getString("Field").equals("CourseUnits")) {
+						has_courses_courseunits = true;
+					}
+					if (rs.getString("Field").equals("Prerequisites")) {
+						has_courses_prerequisites = true;
+					}
+					if (rs.getString("Field").equals("Price")) {
+						has_courses_price = true;
+					}
+					if (rs.getString("Field").equals("Status")) {
+						has_courses_status = true;
+					}
+				}
+				// Check if Courses Table has the correct primary key
+				boolean has_courses_primarykey = false;
+				query = "SHOW INDEX FROM courses";
+				rs = stmt.executeQuery(query);
+				if (rs.next()) {
+					if (rs.getString("Column_name").equals("CourseID")) {
+						has_courses_primarykey = true;
+					}
+				}
+				if (!has_courses_courseid) {
+					query = "ALTER TABLE courses ADD COLUMN CourseID int";
+					stmt.execute(query);
+					query = "ALTER TABLE courses ADD PRIMARY KEY(CourseID)";
+					stmt.execute(query);
+				}
+				if (!has_courses_primarykey) {
+					query = "ALTER TABLE courses ADD PRIMARY KEY(CourseID)";
+					stmt.execute(query);
+				}
+				if (!has_courses_coursecode) {
+					query = "ALTER TABLE courses ADD COLUMN CourseCode varchar(255) NOT NULL UNIQUE";
+					stmt.execute(query);
+				}
+				if (!has_courses_coursename) {
+					query = "ALTER TABLE courses ADD COLUMN CourseName text NOT NULL";
+					stmt.execute(query);
+				}
+				if (!has_courses_courseunits) {
+					query = "ALTER TABLE courses ADD COLUMN CourseUnits float NOT NULL DEFAULT 0";
+					stmt.execute(query);
+				}
+				if (!has_courses_prerequisites) {
+					query = "ALTER TABLE courses ADD COLUMN Prerequisites text NOT NULL";
+					stmt.execute(query);
+				}
+				if (!has_courses_price) {
+					query = "ALTER TABLE courses ADD COLUMN Price float NOT NULL DEFAULT 0";
+					stmt.execute(query);
+				}
+				if (!has_courses_status) {
+					query = "ALTER TABLE courses ADD COLUMN Status int NOT NULL DEFAULT 1";
+					stmt.execute(query);
+				}
+				System.out.println("Courses table is now configured correctly!");
 			}
 
 			con.close();
@@ -291,7 +381,7 @@ public class Database {
 
 		return userid;
 	}
-	
+
 	public String getAccountType(String username) {
 		String accounttype = "";
 		try {
@@ -313,7 +403,7 @@ public class Database {
 
 		return accounttype;
 	}
-	
+
 	public String getAccountFullName(String username) {
 		String fullname = "";
 		try {
@@ -381,9 +471,10 @@ public class Database {
 
 			String query = "INSERT INTO `accounts` " + "(`UserID`, " + "`UserName`, " + "`Password`, " + "`FullName`, "
 					+ "`AccountType`, " + "`DateRegistered`) " + "VALUES ('" + userID + "', " + "'" + userName + "', "
-					+ "'" + pass + "', " + "'" + fullName + "', " + "'" + accountType + "', " + "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
-																												// UTC
-																												// -8)
+					+ "'" + pass + "', " + "'" + fullName + "', " + "'" + accountType + "', "
+					+ "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
+			// UTC
+			// -8)
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
 				return true;
@@ -394,31 +485,27 @@ public class Database {
 		}
 		return false;
 	}
-	
-	
-	public boolean editAccount(String userID, String userName, String accountType, String pass, String fullName)
-	{
-		try{
+
+	public boolean editAccount(String userID, String userName, String accountType, String pass, String fullName) {
+		try {
 			connect();
 			String query = "";
-			
-			if(pass.length() > 0){
+
+			if (pass.length() > 0) {
 				pass = new StrongPasswordEncryptor().encryptPassword(pass);
-				query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', FullName = '" + fullName + "', AccountType = '" + accountType + 
-						"'  WHERE userID ='" + userID + "'";
-			}
-			else{
-				query = "UPDATE `accounts` SET UserName = '" + userName + "', FullName = '" + fullName + "', AccountType = '" + accountType + 
-						"'  WHERE userID ='" + userID + "'";
+				query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', FullName = '"
+						+ fullName + "', AccountType = '" + accountType + "'  WHERE userID ='" + userID + "'";
+			} else {
+				query = "UPDATE `accounts` SET UserName = '" + userName + "', FullName = '" + fullName
+						+ "', AccountType = '" + accountType + "'  WHERE userID ='" + userID + "'";
 			}
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
 				return true;
 			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
 		}
-	catch(Exception e){
-		System.out.println("Error: " + e);
-	}
 		return false;
 	}
 
@@ -434,6 +521,28 @@ public class Database {
 			System.out.println("Error: " + e);
 		}
 		return false;
+	}
+	
+	public ArrayList<ArrayList<String>> retrieveSubjects() {
+		ArrayList<ArrayList<String>> subjects = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM courses WHERE Status = 1";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> subject = new ArrayList<String>();
+				subject.add(rs.getString("CourseID"));
+				subject.add(rs.getString("CourseCode"));
+				subject.add(rs.getString("CourseName"));
+				subject.add(rs.getString("CourseUnits"));
+				subject.add(rs.getString("Prerequisites"));
+				subjects.add(subject);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return subjects;
 	}
 
 }

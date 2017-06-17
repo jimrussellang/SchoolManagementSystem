@@ -128,7 +128,7 @@
 							</a>
 								<div class="dropdown-menu">
 									<div class="profile-info">
-										<h4 class="username">Hadji Tejuco</h4>
+										<h4 class="username">${sessionScope.login_fullname}</h4>
 									</div>
 									<ul class="action">
 										<li><a href="#"> Profile </a></li>

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>School Management System - Dashboard</title>
+<title>School Management System - ${page_title}</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 

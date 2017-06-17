@@ -38,6 +38,8 @@ public class AccountsController {
 		// Checks if user is logged in. If not, redirects to Login page.
 		if (!logincontroller.isLoggedIn(session, response)) {
 			model.addAttribute("access_denied_msg", "You must login first to access this page!");
+			// Used for redirecting to current page after logging in
+			session.setAttribute("pageforward", request.getRequestURL());
 			return "login";
 		}
 		// Attribute used for printing the page title
@@ -48,7 +50,7 @@ public class AccountsController {
 		return "accounts";
 	}
 
-	// Simply selects the accounts view to render by returning its name.
+	// Adds new account to the database
 	@RequestMapping(value = { "/accounts_add" }, method = RequestMethod.POST)
 	public String accounts_add(Model model, HttpSession session, @ModelAttribute("accountBean") AccountBean accountBean,
 			HttpServletResponse response, HttpServletRequest request) {
