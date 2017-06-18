@@ -544,5 +544,65 @@ public class Database {
 		}
 		return subjects;
 	}
+	
+	
+	public boolean addCourse(String courseID, String courseCode, String courseName, String courseUnits, String prerequisites,
+			String price, String status) {
+
+		try {
+			connect();
+			// generate random data if empty
+			if (courseID.trim().isEmpty())
+				courseID = "" + (new Random()).nextInt(9999); // random courseID
+			
+			String query = "INSERT INTO `courses` " + "(`CourseID`, " + "`CourseCode`, " + "`CourseName`, " + "`CourseUnits`, "
+					+ "`Prerequisites`, " + "`Price`, " + "'Status') " + "VALUES ('" + courseID + "', " + "'" + courseCode + "', "
+					+ "'" + courseName + "', " + "'" + courseUnits + "', " + "'" + prerequisites + "', "
+					+ "'" + price + "', '" + status + "';";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean editCourse(String courseID, String courseCode, String courseName, String courseUnits, String prerequisites,
+			String price, String status) {
+
+		try {
+			connect();
+						
+			String query = "UPDATE `courses` SET CourseCode = '"+ courseCode +"', CourseName = '"+ courseName +"', CourseUnits = '"+ courseUnits +"', "
+					+ "Prerequisites = '"+ prerequisites +"', Price = '"+ price +"', Status = '"+ status +"' WHERE CourseID = '"+ courseID +"';";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean deleteCourses(String courseID) {
+		try {
+			String query = "UPDATE `courses` SET Status = 0 WHERE `courses`.`CourseID` = " + courseID;
+			connect();
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
 
 }
