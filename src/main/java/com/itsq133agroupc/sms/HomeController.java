@@ -59,6 +59,10 @@ public class HomeController {
 	@RequestMapping(value = { "setup" }, method = RequestMethod.GET)
 	public String setup(Locale locale, Model model, HttpSession session, HttpServletResponse response) {
 		logger.info("System Setup is being accessed...");
+		
+		//Attribute used for printing the page title
+		model.addAttribute("page_title", "System Setup");
+				
 		return "setup";
 	}
 

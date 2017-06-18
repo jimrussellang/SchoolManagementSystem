@@ -1,12 +1,16 @@
 package com.itsq133agroupc.sms;
- 
+
+import java.util.ArrayList;
+
 public class AccountBean {
  
 	private String userid;
     private String username;
     private String password;
     private String repassword;
+    private String fullname;
     private String accttype;
+    private String userids;
  
     public String getUserid() {
         return userid;
@@ -39,12 +43,28 @@ public class AccountBean {
         this.repassword = repassword;
     }
     
+    public String getFullname() {
+        return fullname;
+    }
+ 
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+    
     public String getAccttype() {
         return accttype;
     }
  
     public void setAccttype(String accttype) {
         this.accttype = accttype;
+    }
+    
+    public String getUserids() {
+        return userids;
+    }
+ 
+    public void setUserids(String userids) {
+        this.userids = userids;
     }
  
 } 
