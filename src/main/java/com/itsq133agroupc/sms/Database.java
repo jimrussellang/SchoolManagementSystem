@@ -674,14 +674,8 @@ public class Database {
 			// generate random data if empty
 			if (userID.trim().isEmpty())
 				userID = "" + (new Random()).nextInt(9999); // random UserID
-<<<<<<< HEAD
-			if (userName.trim().isEmpty())
-				userName = new BigInteger(64, (new SecureRandom())).toString(32); // randueuwqio
-																					// Username
-=======
 			if (userName.trim().isEmpty())
 				userName = new BigInteger(64, (new SecureRandom())).toString(32);// random Username
->>>>>>> branch 'master' of https://github.com/jimrussellang/SchoolManagementSystem.git
 			if (accountType.trim().isEmpty())
 				accountType = "School" + (new Random()).nextInt(100) + "-" + "6000"; // random AcctType																				
 			if (pass.isEmpty())
