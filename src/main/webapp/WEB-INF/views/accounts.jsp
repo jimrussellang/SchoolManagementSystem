@@ -34,7 +34,8 @@
 				<div class="toggle-content">
 					<ul class="actions">
 						<li><a onClick="reloadTable()">Refresh</a></li>
-						<li><a onClick="closeFloatingButton()" href="#" data-toggle="modal" data-target="#addModal">Add new account</a></li>
+						<li><a onClick="closeFloatingButton()" href="#"
+							data-toggle="modal" data-target="#addModal">Add new account</a></li>
 						<li><a onClick="editMode()">Edit existing accounts</a></li>
 						<li><a onClick="deleteMode()">Delete existing accounts</a></li>
 					</ul>

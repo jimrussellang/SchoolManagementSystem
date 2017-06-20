@@ -5,8 +5,6 @@ import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Random;
-
-import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 public class Database {
@@ -48,7 +46,7 @@ public class Database {
 			String query = "SELECT table_name FROM information_schema.tables WHERE table_schema='" + dbName + "';";
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
-			int count = 0;
+			//int count = 0;
 			// Container for table names found
 			ArrayList<String> tables = new ArrayList<String>();
 
@@ -59,7 +57,7 @@ public class Database {
 			boolean has_schools = false;
 			boolean has_degrees = false;
 			while (rs.next()) {
-				count++;
+				//count++;
 				tables.add(rs.getString("table_name"));
 				System.out.println("Table: " + rs.getString("table_name"));
 				// Check if Root Account table exists
@@ -671,32 +669,32 @@ public class Database {
 	}
 
 	public boolean addAccount(String userID, String userName, String accountType, String pass, String fullName) {
-
 		try {
 			connect();
-			StrongPasswordEncryptor spwd = new StrongPasswordEncryptor();
 			// generate random data if empty
 			if (userID.trim().isEmpty())
 				userID = "" + (new Random()).nextInt(9999); // random UserID
+<<<<<<< HEAD
 			if (userName.trim().isEmpty())
 				userName = new BigInteger(64, (new SecureRandom())).toString(32); // randueuwqio
 																					// Username
+=======
+			if (userName.trim().isEmpty())
+				userName = new BigInteger(64, (new SecureRandom())).toString(32);// random Username
+>>>>>>> branch 'master' of https://github.com/jimrussellang/SchoolManagementSystem.git
 			if (accountType.trim().isEmpty())
-				accountType = "School" + (new Random()).nextInt(100) + "-" + "6000"; // random
-																						// AcctType
+				accountType = "School" + (new Random()).nextInt(100) + "-" + "6000"; // random AcctType																				
 			if (pass.isEmpty())
-				pass = spwd.encryptPassword("rosebud"); // Should be encrypted
+				pass = passwordEncryptor.encryptPassword("rosebud"); // Should be encrypted
 														// before or after going
 														// in method?
 			else
-				pass = spwd.encryptPassword(pass);
+				pass = passwordEncryptor.encryptPassword(pass);
 
 			String query = "INSERT INTO `accounts` " + "(`UserID`, " + "`UserName`, " + "`Password`, " + "`FullName`, "
 					+ "`AccountType`, " + "`DateRegistered`) " + "VALUES ('" + userID + "', " + "'" + userName + "', "
 					+ "'" + pass + "', " + "'" + fullName + "', " + "'" + accountType + "', "
-					+ "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server
-			// UTC
-			// -8)
+					+ "DATE_ADD(NOW(), INTERVAL 16 HOUR));"; // Server time is UTC-8)
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
 				return true;
@@ -714,7 +712,7 @@ public class Database {
 			String query = "";
 
 			if (pass.length() > 0) {
-				pass = new StrongPasswordEncryptor().encryptPassword(pass);
+				pass = passwordEncryptor.encryptPassword(pass);
 				query = "UPDATE `accounts` SET UserName = '" + userName + "', Password = '" + pass + "', FullName = '"
 						+ fullName + "', AccountType = '" + accountType + "'  WHERE userID ='" + userID + "'";
 			} else {
@@ -765,6 +763,72 @@ public class Database {
 			System.out.println("Database Process Error! " + e);
 		}
 		return subjects;
+	}
+	
+	
+	public boolean addCourse(String courseID, String courseCode, String courseName, String courseUnits, String prerequisites,
+			String price, String status) {
+
+		try {
+			connect();
+			// generate random data if empty
+			if (courseID.trim().isEmpty())
+				courseID = "" + (new Random()).nextInt(9999); // random courseID
+			
+			String query = "INSERT INTO `courses` "
+					+ "(`CourseID`, `CourseCode`, `CourseName`, `CourseUnits`, `Prerequisites`, `Price`, 'Status') "
+					+ "VALUES ('" 
+					+ courseID + "','" 
+					+ courseCode + "', '"
+					+ courseName + "', '" 
+					+ courseUnits + "', '" 
+					+ prerequisites + "', '" 
+					+ price + "', '" 
+					+ status + "';";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean editCourse(String courseID, String courseCode, String courseName, String courseUnits, String prerequisites,
+			String price, String status) {
+
+		try {
+			connect();
+						
+			String query = "UPDATE `courses` SET CourseCode = '"+ courseCode +"', CourseName = '"+ courseName +"', CourseUnits = '"+ courseUnits +"', "
+					+ "Prerequisites = '"+ prerequisites +"', Price = '"+ price +"', Status = '"+ status +"' WHERE CourseID = '"+ courseID +"';";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean deleteCourses(String courseID) {
+		try {
+			String query = "UPDATE `courses` SET Status = 0 WHERE `courses`.`CourseID` = " + courseID;
+			connect();
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
 	}
 
 	public ArrayList<ArrayList<String>> retrieveCurriculums() {

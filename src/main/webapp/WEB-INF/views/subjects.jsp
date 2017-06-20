@@ -77,12 +77,9 @@
 							class="container-fluid">
 							<div class="alert alert-warning"
 								style="overflow: hidden; white-space: nowrap;">
-								<strong>You're in Delete Mode!</strong> <a href="#"
-									data-toggle="tooltip"
-									title="Highlight all records to be deleted
-								by clicking on them. Then, click on the 'Delete Selected Records'
-								to delete all selected records. NOTE: Once you delete them, it CANNOT BE UNDONE!"><button
-										class="btn btn-xs btn-primary">?</button></a>
+								<strong>You're in Delete Mode!</strong> Highlight all records to be deleted
+								by clicking on them. Then, click on the "Delete Selected Records"
+								to delete all selected records. NOTE: Once you delete them, it CANNOT BE UNDONE!
 							</div>
 							<div class="container-fluid">
 								<button id="btn_deleteselrecs" class="btn btn-sm btn-danger">Delete
@@ -221,7 +218,7 @@
 					<h4 class="modal-title">Edit Subject</h4>
 				</div>
 				<div class="modal-body">
-					<form id="editform" class="form form-horizontal" method="POST" action="subjects_edit">
+					<form id="editform" class="form form-horizontal" method="POST" action="accounts_edit">
 						<div class="section">
 							<div class="section-body">
 								<div class="form-group">
@@ -335,7 +332,7 @@
 			$('table').DataTable().clear().draw();
 			$.ajax({
 				type : 'POST',
-				url : 'subjects_reloadtable',
+				url : 'accounts_reloadtable',
 				success : function(data) {
 					$('#ajax_result').html(data);
 					toggleTableLoad();
@@ -343,13 +340,12 @@
 				},
 				error : function(data) {
 					//$('#result').html(data);
-					alert("Error: " + data);
-					$("#table_container").removeClass("__loading");
+					alert(data);
 				}
 			});
 		} 
 		function addSubject() {
-			if ( $('#add_coursecode').val() != '' || $('#add_coursename').val() != '' || $('#add_courseunits').val() != ''){
+			if ( $('#add_coursecode').val() != '' && $('#add_coursename').val() != '' && $('#add_courseunits').val() != ''){
 				var subjectData = $('#addform').serialize(); 
 				$.ajax({
 					type: 'POST',

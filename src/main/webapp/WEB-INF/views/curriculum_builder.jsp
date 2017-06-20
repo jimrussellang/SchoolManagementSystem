@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page session="true"%>
-<%@page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,7 +42,7 @@
 
 		<div class="app-container">
 
-			<%@ include file="include/nav.jsp"%>
+			<%@ include file="include/nav.jsp" %>
 
 			<div class="btn-floating" id="help-actions">
 				<div class="btn-bg"></div>
@@ -72,6 +71,8 @@
 				<div class="toggle-content">
 					<ul class="actions">
 						<li><a onClick="cancelAnyMode()">Cancel</a></li>
+						<li><a href="#">Add new curriculum</a></li>
+						<li><a href="curriculum-builder">Refresh</a></li>
 					</ul>
 				</div>
 			</div>
@@ -132,10 +133,9 @@
 								cellspacing="0" width="100%">
 								<thead>
 									<tr>
-										<th>Curriculum ID</th>
 										<th>Curriculum Code</th>
 										<th>Years</th>
-										<th>Terms per year</th>
+										<th>Terms per Year</th>
 										<th>Units</th>
 									</tr>
 								</thead>
@@ -163,8 +163,34 @@
 											</c:forEach>
 										</tr>
 									</c:forEach>
+									<tr>
+										<th scope="row">BSCSSE2012</th>
+										<td>4</td>
+										<td>3</td>
+										<td>218.5</td>
+									</tr>
+									<tr>
+										<th scope="row">BSITDA2012</th>
+										<td>4</td>
+										<td>3</td>
+										<td>218.5</td>
+									</tr>
+									<tr>
+										<th scope="row">BSITAGD2012</th>
+										<td>4</td>
+										<td>3</td>
+										<td>218.5</td>
+									</tr>
+									<tr>
+										<th scope="row">BSCE2012</th>
+										<td>4</td>
+										<td>3</td>
+										<td>218.5</td>
+									</tr>
+>>>>>>> branch 'master' of https://github.com/jimrussellang/SchoolManagementSystem.git
 								</tbody>
 							</table>
+<<<<<<< HEAD
 						</div>
 					</div>
 				</div>
@@ -320,6 +346,47 @@
 							</div>
 <!-- 							<button onClick="getInfo(1, 2)">Get Info!</button> -->
 							<button class="btn btn-success" onClick="saveCurriculumEdit()">Save</button>
+=======
+
+							<!-- 
+									<table class="table table-striped table-bordered table-hover">
+										<thead>
+											<tr>
+												<th>Curriculum Code</th>
+												<th>Years</th>
+												<th>Terms per Year</th>
+												<th>Units</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<th scope="row">BSCSSE2012</th>
+												<td>4</td>
+												<td>3</td>
+												<td>218.5</td>
+											</tr>
+											<tr>
+												<th scope="row">BSITDA2012</th>
+												<td>4</td>
+												<td>3</td>
+												<td>218.5</td>
+											</tr>
+											<tr>
+												<th scope="row">BSITAGD2012</th>
+												<td>4</td>
+												<td>3</td>
+												<td>218.5</td>
+											</tr>
+											<tr>
+												<th scope="row">BSCE2012</th>
+												<td>4</td>
+												<td>3</td>
+												<td>218.5</td>
+											</tr>
+										</tbody>
+									</table> -->
+
+>>>>>>> branch 'master' of https://github.com/jimrussellang/SchoolManagementSystem.git
 						</div>
 					</div>
 				</div>
@@ -330,6 +397,7 @@
 
 	</div>
 
+<<<<<<< HEAD
 	<!-- Modals -->
 	<div class="modal fade" id="addModal" role="dialog"
 		aria-labelledby="addModal">
@@ -483,12 +551,15 @@
 	<!-- AJAX RESULT CONTAINER -->
 	<div id="ajax_result"></div>
 
+=======
+>>>>>>> branch 'master' of https://github.com/jimrussellang/SchoolManagementSystem.git
 	<!-- INITIALIZE BELOW -->
 	<%@ include file="include/below_ini.jsp"%>
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
 		$("ul.sidebar-nav > li:eq(4)").addClass("active");
+<<<<<<< HEAD
 	</script>
 
 	<!-- Script execution when page is done -->
@@ -894,6 +965,8 @@
 				}
 			});
 		}
+=======
+>>>>>>> branch 'master' of https://github.com/jimrussellang/SchoolManagementSystem.git
 	</script>
 </body>
 
