@@ -86,7 +86,7 @@ public class AccountsController {
 		return "redirect:accounts";
 	}
 
-	// Simply selects the accounts view to render by returning its name.
+	// AJAX for Reload Table
 	@RequestMapping(value = { "/accounts_reloadtable" }, method = RequestMethod.POST)
 	public @ResponseBody String accounts_reloadtable(Model model, HttpSession session,
 			@ModelAttribute("accountBean") AccountBean accountBean, HttpServletResponse response,

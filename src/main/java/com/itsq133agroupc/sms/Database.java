@@ -55,6 +55,9 @@ public class Database {
 			boolean has_rootaccount = false;
 			boolean has_accounts = false;
 			boolean has_courses = false;
+			boolean has_curriculums = false;
+			boolean has_schools = false;
+			boolean has_degrees = false;
 			while (rs.next()) {
 				count++;
 				tables.add(rs.getString("table_name"));
@@ -70,6 +73,10 @@ public class Database {
 				// Check if Courses table exists
 				if (rs.getString("table_name").equals("courses")) {
 					has_courses = true;
+				}
+				// Check if Curriculums table exists
+				if (rs.getString("table_name").equals("curriculums")) {
+					has_curriculums = true;
 				}
 			}
 
@@ -201,7 +208,7 @@ public class Database {
 					}
 				}
 				if (!has_accounts_userid) {
-					query = "ALTER TABLE accounts ADD COLUMN UserID int";
+					query = "ALTER TABLE accounts ADD COLUMN UserID int NOT NULL UNIQUE";
 					stmt.execute(query);
 					query = "ALTER TABLE accounts ADD PRIMARY KEY(UserID)";
 					stmt.execute(query);
@@ -290,7 +297,7 @@ public class Database {
 					}
 				}
 				if (!has_courses_courseid) {
-					query = "ALTER TABLE courses ADD COLUMN CourseID int";
+					query = "ALTER TABLE courses ADD COLUMN CourseID int NOT NULL UNIQUE";
 					stmt.execute(query);
 					query = "ALTER TABLE courses ADD PRIMARY KEY(CourseID)";
 					stmt.execute(query);
@@ -324,6 +331,221 @@ public class Database {
 					stmt.execute(query);
 				}
 				System.out.println("Courses table is now configured correctly!");
+			}
+
+			// If Curriculums table does not exist, create one
+			if (!has_curriculums) {
+				query = "CREATE TABLE curriculums ( CurriculumID int NOT NULL UNIQUE, CurriculumCode varchar(255) NOT NULL UNIQUE, Years int NOT NULL DEFAULT 0, Terms int NOT NULL DEFAULT 0, TotalUnits float NOT NULL DEFAULT 0, Courses text, TotalPrice float NOT NULL DEFAULT 0, Status int NOT NULL DEFAULT 1, PRIMARY KEY (CurriculumID) )";
+				stmt.execute(query);
+				System.out.println("Curriculums Table is now configured.");
+			} else {
+				// Check if Curriculums Table has the correct columns
+				query = "DESCRIBE curriculums";
+				rs = stmt.executeQuery(query);
+				boolean has_curriculums_curriculumid = false;
+				boolean has_curriculums_curriculumcode = false;
+				boolean has_curriculums_years = false;
+				boolean has_curriculums_terms = false;
+				boolean has_curriculums_totalunits = false;
+				boolean has_curriculums_courses = false;
+				boolean has_curriculums_totalprice = false;
+				boolean has_curriculums_status = false;
+				while (rs.next()) {
+					if (rs.getString("Field").equals("CurriculumID")) {
+						has_curriculums_curriculumid = true;
+					}
+					if (rs.getString("Field").equals("CurriculumCode")) {
+						has_curriculums_curriculumcode = true;
+					}
+					if (rs.getString("Field").equals("Years")) {
+						has_curriculums_years = true;
+					}
+					if (rs.getString("Field").equals("Terms")) {
+						has_curriculums_terms = true;
+					}
+					if (rs.getString("Field").equals("TotalUnits")) {
+						has_curriculums_totalunits = true;
+					}
+					if (rs.getString("Field").equals("Courses")) {
+						has_curriculums_courses = true;
+					}
+					if (rs.getString("Field").equals("TotalPrice")) {
+						has_curriculums_totalprice = true;
+					}
+					if (rs.getString("Field").equals("Status")) {
+						has_curriculums_status = true;
+					}
+				}
+				// Check if Curriculums Table has the correct primary key
+				boolean has_curriculums_primarykey = false;
+				query = "SHOW INDEX FROM curriculums";
+				rs = stmt.executeQuery(query);
+				if (rs.next()) {
+					if (rs.getString("Column_name").equals("CurriculumID")) {
+						has_curriculums_primarykey = true;
+					}
+				}
+				if (!has_curriculums_curriculumid) {
+					query = "ALTER TABLE curriculums ADD COLUMN CurriculumID int NOT NULL UNIQUE";
+					stmt.execute(query);
+					query = "ALTER TABLE curriculums ADD PRIMARY KEY(CurriculumID)";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_primarykey) {
+					query = "ALTER TABLE curriculums ADD PRIMARY KEY(CurriculumID)";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_curriculumcode) {
+					query = "ALTER TABLE curriculums ADD COLUMN CurriculumCode varchar(255) NOT NULL UNIQUE";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_years) {
+					query = "ALTER TABLE curriculums ADD COLUMN Years int NOT NULL DEFAULT 0";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_terms) {
+					query = "ALTER TABLE curriculums ADD COLUMN Terms int NOT NULL DEFAULT 0";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_totalunits) {
+					query = "ALTER TABLE curriculums ADD COLUMN TotalUnits float NOT NULL DEFAULT 0";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_courses) {
+					query = "ALTER TABLE curriculums ADD COLUMN Courses text";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_totalprice) {
+					query = "ALTER TABLE curriculums ADD COLUMN TotalPrice float NOT NULL DEFAULT 0";
+					stmt.execute(query);
+				}
+				if (!has_curriculums_status) {
+					query = "ALTER TABLE curriculums ADD COLUMN Status int NOT NULL DEFAULT 1";
+					stmt.execute(query);
+				}
+				System.out.println("Curriculums table is now configured correctly!");
+			}
+
+			// If Schools table does not exist, create one
+			if (!has_schools) {
+				query = "CREATE TABLE schools ( SchoolCode varchar(255) NOT NULL UNIQUE, SchoolName varchar(255) NOT NULL UNIQUE, Status int NOT NULL DEFAULT 1, PRIMARY KEY (SchoolCode) )";
+				stmt.execute(query);
+				System.out.println("Schools Table is now configured.");
+			} else {
+				// Check if Schools Table has the correct columns
+				query = "DESCRIBE schools";
+				rs = stmt.executeQuery(query);
+				boolean has_schools_schoolcode = false;
+				boolean has_schools_schoolname = false;
+				boolean has_schools_status = false;
+				while (rs.next()) {
+					if (rs.getString("Field").equals("SchoolCode")) {
+						has_schools_schoolcode = true;
+					}
+					if (rs.getString("Field").equals("SchoolName")) {
+						has_schools_schoolname = true;
+					}
+					if (rs.getString("Field").equals("Status")) {
+						has_schools_status = true;
+					}
+				}
+				// Check if Schools Table has the correct primary key
+				boolean has_schools_primarykey = false;
+				query = "SHOW INDEX FROM schools";
+				rs = stmt.executeQuery(query);
+				if (rs.next()) {
+					if (rs.getString("Column_name").equals("SchoolCode")) {
+						has_schools_primarykey = true;
+					}
+				}
+				if (!has_schools_schoolcode) {
+					query = "ALTER TABLE schools ADD COLUMN SchoolCode varchar(255) NOT NULL UNIQUE";
+					stmt.execute(query);
+					query = "ALTER TABLE schools ADD PRIMARY KEY(SchoolCode)";
+					stmt.execute(query);
+				}
+				if (!has_schools_primarykey) {
+					query = "ALTER TABLE schools ADD PRIMARY KEY(SchoolCode)";
+					stmt.execute(query);
+				}
+				if (!has_schools_schoolname) {
+					query = "ALTER TABLE schools ADD COLUMN SchoolName varchar(255) NOT NULL UNIQUE";
+					stmt.execute(query);
+				}
+				if (!has_schools_status) {
+					query = "ALTER TABLE schools ADD COLUMN Status int NOT NULL DEFAULT 1";
+					stmt.execute(query);
+				}
+				System.out.println("Schools table is now configured correctly!");
+			}
+
+			// If Degrees table does not exist, create one
+			if (!has_degrees) {
+				query = "CREATE TABLE degrees ( DegreeID int NOT NULL UNIQUE, DegreeCode varchar(255) NOT NULL UNIQUE, DegreeName text NOT NULL, DegreeCurriculum int, Status int NOT NULL DEFAULT 1, PRIMARY KEY (DegreeID) )";
+				stmt.execute(query);
+				System.out.println("Degrees Table is now configured.");
+			} else {
+				// Check if Degrees Table has the correct columns
+				query = "DESCRIBE degrees";
+				rs = stmt.executeQuery(query);
+				boolean has_degrees_degreeid = false;
+				boolean has_degrees_degreecode = false;
+				boolean has_degrees_degreename = false;
+				boolean has_degrees_degreecurriculum = false;
+				boolean has_degrees_status = false;
+				while (rs.next()) {
+					if (rs.getString("Field").equals("DegreeID")) {
+						has_degrees_degreeid = true;
+					}
+					if (rs.getString("Field").equals("DegreeCode")) {
+						has_degrees_degreecode = true;
+					}
+					if (rs.getString("Field").equals("DegreeName")) {
+						has_degrees_degreename = true;
+					}
+					if (rs.getString("Field").equals("DegreeCurriculum")) {
+						has_degrees_degreecurriculum = true;
+					}
+					if (rs.getString("Field").equals("Status")) {
+						has_degrees_status = true;
+					}
+				}
+				// Check if Degrees Table has the correct primary key
+				boolean has_degrees_primarykey = false;
+				query = "SHOW INDEX FROM degrees";
+				rs = stmt.executeQuery(query);
+				if (rs.next()) {
+					if (rs.getString("Column_name").equals("DegreeID")) {
+						has_degrees_primarykey = true;
+					}
+				}
+				if (!has_degrees_degreeid) {
+					query = "ALTER TABLE degrees ADD COLUMN DegreeID int NOT NULL UNIQUE";
+					stmt.execute(query);
+					query = "ALTER TABLE degrees ADD PRIMARY KEY(DegreeID)";
+					stmt.execute(query);
+				}
+				if (!has_degrees_primarykey) {
+					query = "ALTER TABLE degrees ADD PRIMARY KEY(DegreeID)";
+					stmt.execute(query);
+				}
+				if (!has_degrees_degreecode) {
+					query = "ALTER TABLE degrees ADD COLUMN DegreeCode varchar(255) NOT NULL UNIQUE";
+					stmt.execute(query);
+				}
+				if (!has_degrees_degreename) {
+					query = "ALTER TABLE degrees ADD COLUMN DegreeName text NOT NULL";
+					stmt.execute(query);
+				}
+				if (!has_degrees_degreecurriculum) {
+					query = "ALTER TABLE degrees ADD COLUMN DegreeCurriculum int";
+					stmt.execute(query);
+				}
+				if (!has_degrees_status) {
+					query = "ALTER TABLE degrees ADD COLUMN Status int NOT NULL DEFAULT 1";
+					stmt.execute(query);
+				}
+				System.out.println("Degrees table is now configured correctly!");
 			}
 
 			con.close();
@@ -522,7 +744,7 @@ public class Database {
 		}
 		return false;
 	}
-	
+
 	public ArrayList<ArrayList<String>> retrieveSubjects() {
 		ArrayList<ArrayList<String>> subjects = new ArrayList<ArrayList<String>>();
 		try {
@@ -543,6 +765,150 @@ public class Database {
 			System.out.println("Database Process Error! " + e);
 		}
 		return subjects;
+	}
+
+	public ArrayList<ArrayList<String>> retrieveCurriculums() {
+		ArrayList<ArrayList<String>> curriculums = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM curriculums WHERE Status = 1";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> curriculum = new ArrayList<String>();
+				curriculum.add(rs.getString("CurriculumID"));
+				curriculum.add(rs.getString("CurriculumCode"));
+				curriculum.add(rs.getString("Years"));
+				curriculum.add(rs.getString("Terms"));
+				curriculum.add(rs.getString("TotalUnits"));
+				// curriculum.add(rs.getString("Courses"));
+				curriculums.add(curriculum);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return curriculums;
+	}
+
+	public ArrayList<String> getCurriculumInfo(String curriculum_id) {
+		ArrayList<String> curriculum = new ArrayList<String>();
+		try {
+			connect();
+			String query = "SELECT * FROM curriculums WHERE Status = 1 AND CurriculumID = " + curriculum_id;
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				curriculum.add(rs.getString("CurriculumID"));
+				curriculum.add(rs.getString("CurriculumCode"));
+				curriculum.add(rs.getString("Years"));
+				curriculum.add(rs.getString("Terms"));
+				curriculum.add(rs.getString("TotalUnits"));
+				curriculum.add(rs.getString("Courses"));
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return curriculum;
+	}
+
+	public boolean saveCurriculumStructure(String curriculum_id, String curriculum_structure) {
+		try {
+			connect();
+			String query = "UPDATE curriculums SET courses = '" + curriculum_structure + "' WHERE CurriculumID = "
+					+ curriculum_id;
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+
+	public ArrayList<ArrayList<String>> retrieveSchools() {
+		ArrayList<ArrayList<String>> schools = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM schools WHERE Status = 1";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> school = new ArrayList<String>();
+				school.add(rs.getString("SchoolCode"));
+				school.add(rs.getString("SchoolName"));
+				schools.add(school);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return schools;
+	}
+
+	public boolean addSchool(String schoolCode, String schoolName) {
+
+		try {
+			connect();
+			// generate random data if empty
+			if (schoolCode.trim().isEmpty())
+				schoolCode = new BigInteger(64, (new SecureRandom())).toString(32); //random schoolcode
+			if (schoolName.trim().isEmpty())
+				schoolName = new BigInteger(64, (new SecureRandom())).toString(32); // random
+																					// School Name
+
+			String query = "INSERT INTO `schools` " + "(`SchoolCode`, " + "`SchoolName`) " + "VALUES ('" + schoolCode + "', " + "'" + schoolName + "');";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+
+	public ArrayList<ArrayList<String>> retrieveDegrees() {
+		ArrayList<ArrayList<String>> degrees = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM degrees WHERE Status = 1";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> degree = new ArrayList<String>();
+				degree.add(rs.getString("DegreeID"));
+				degree.add(rs.getString("DegreeCode"));
+				degree.add(rs.getString("DegreeName"));
+				degree.add(rs.getString("DegreeCurriculum"));
+				degrees.add(degree);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return degrees;
+	}
+
+	public ArrayList<ArrayList<String>> retrieveStudents() {
+		ArrayList<ArrayList<String>> students = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM accounts WHERE AccountType = 'ST' AND Status = 1";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> record = new ArrayList<String>();
+				record.add(rs.getString("UserID"));
+				record.add(rs.getString("UserName"));
+				record.add(rs.getString("FullName"));
+				record.add(rs.getString("DateRegistered"));
+				students.add(record);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return students;
 	}
 
 }

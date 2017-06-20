@@ -8,6 +8,7 @@
 <script src="<c:url value="/resources/assets/js/notify.js" />"></script>
 <script src="<c:url value="/resources/assets/js/nanobar.js" />"></script>
 <script src="<c:url value="/resources/assets/js/bootstrap-switch.js" />"></script>
+<script src="<c:url value="/resources/assets/js/Sortable.min.js" />"></script>
 
 
 
@@ -21,7 +22,7 @@
 	});
 	$('a').click(function() {
 		try {
-			if ($(this).attr('href').indexOf("#") == -1) {
+			if ($(this).attr('href').indexOf("#") == -1 && $(this).attr('href').indexOf("javascript:void(0)") == -1) {
 				loadPage();
 			}
 		} catch (e) {
