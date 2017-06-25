@@ -47,12 +47,15 @@ public class SchoolsController {
 
 		Database database = new Database();
 		request.setAttribute("schools_schools-list", database.retrieveSchools());
+		
+		//Menu Active Number
+		request.setAttribute("menuactivenum", 2);
 		return "schools";
 	}
 
 	// Adds new school to the database
 	@RequestMapping(value = { "/schools_add" }, method = RequestMethod.POST)
-	public String accounts_add(Model model, HttpSession session, @ModelAttribute("schoolBean") SchoolBean schoolBean,
+	public String schools_add(Model model, HttpSession session, @ModelAttribute("schoolBean") SchoolBean schoolBean,
 			HttpServletResponse response, HttpServletRequest request) {
 		logger.info("A user has added a new school.");
 
@@ -67,21 +70,91 @@ public class SchoolsController {
 		Database database = new Database();
 		boolean isAdded = false;
 		// Prevents admin conflict
-			isAdded = database.addSchool(schoolBean.getSchoolcode(), schoolBean.getSchoolname());
-			
+		isAdded = database.addSchool(schoolBean.getSchoolcode(), schoolBean.getSchoolname());
+
 		if (isAdded) {
 			model.addAttribute("notify_msg_state", "success");
 			model.addAttribute("notify_msg", "Successfully added a new school!");
 		} else {
 			model.addAttribute("notify_msg_state", "error");
-			model.addAttribute("notify_msg",
-					"An error occurred adding a school! Please check if values are correct.");
+			model.addAttribute("notify_msg", "An error occurred adding a school! Please check if values are correct.");
 		}
 
 		// Reload Accounts Table
 		request.setAttribute("schools_schools-list", database.retrieveSchools());
 
 		return "redirect:schools";
+	}
+
+	// AJAX for Reload Table
+	@RequestMapping(value = { "/schools_reloadtable" }, method = RequestMethod.POST)
+	public @ResponseBody String schools_reloadtable(Model model, HttpSession session,
+			@ModelAttribute("accountBean") AccountBean accountBean, HttpServletResponse response,
+			HttpServletRequest request) {
+		logger.info("A user has reloaded schools table.");
+		String script = "<script>";
+		Database database = new Database();
+		request.setAttribute("schools_schools-list", database.retrieveSchools());
+		ArrayList<ArrayList<String>> schools = (ArrayList<ArrayList<String>>) request
+				.getAttribute("schools_schools-list");
+		script = script.concat("var dataSet = [");
+		for (int i = 0; i < schools.size(); i++) {
+			ArrayList<String> school = schools.get(i);
+			script = script.concat("[");
+			script = script.concat("'" + school.get(0) + "',");
+			script = script.concat("'" + school.get(1) + "'");
+			script = script.concat("]");
+			if (i < schools.size() - 1) {
+				script = script.concat(",");
+			}
+		}
+		script = script.concat("];");
+		script = script.concat("$('table').DataTable().destroy();");
+		script = script.concat(
+				"$('table').DataTable( { data: dataSet, dom: '<\"top\"fl<\"clear\">>rt<\"bottom\"ip<\"clear\">>', oLanguage: { sSearch: \"\", sLengthMenu: \"_MENU_\" }, initComplete: function initComplete(settings, json) {$('div.dataTables_filter input').attr('placeholder', 'Search...'); } } );");
+		script = script.concat("</script>");
+		return script;
+	}
+
+	// AJAX for Accounts Delete
+	@RequestMapping(value = { "/schools_delete" }, method = RequestMethod.POST)
+	public @ResponseBody String accounts_delete(Model model, HttpSession session,
+			@ModelAttribute("schoolBean") SchoolBean schoolBean, HttpServletResponse response,
+			HttpServletRequest request) {
+		logger.info("A user has deleted some schools.");
+
+		ArrayList<String> schoolcodes = new ArrayList(Arrays.asList(schoolBean.getSchoolcodes().split(",")));
+
+		boolean result = false;
+		Database database = new Database();
+		for (int i = 0; i < schoolcodes.size(); i++) {
+			result = database.deleteSchool(schoolcodes.get(i));
+			if (result == false) {
+				return "<script>$.notify('An error has occurred!', 'error');</script>";
+			}
+		}
+
+		return "<script>$.notify('Successfully deleted records', 'success');</script>";
+	}
+
+	// AJAX for Accounts Edit
+	@RequestMapping(value = { "/schools_edit" }, method = RequestMethod.POST)
+	public @ResponseBody String accounts_edit(Model model, HttpSession session,
+			@ModelAttribute("schoolBean") SchoolBean schoolBean, HttpServletResponse response,
+			HttpServletRequest request) {
+		logger.info("A user has edited a school in the schools table.");
+
+		Database database = new Database();
+		boolean isEdited = false;
+		
+		isEdited = database.editSchool(schoolBean.getSchoolcode(), schoolBean.getSchoolname());
+			
+		if (isEdited) {
+			return "<script>$.notify('Successfully edited record', 'success');</script>";
+		} else {
+			return "<script>$.notify('An error has occurred!', 'error');</script>";
+		}
+
 	}
 
 }

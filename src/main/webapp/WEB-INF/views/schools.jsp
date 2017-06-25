@@ -290,7 +290,7 @@
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
-		$("ul.sidebar-nav > li:eq(4)").addClass("active");
+		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass("active");
 	</script>
 
 	<!-- Script execution when page is done -->
@@ -394,6 +394,11 @@
 			highlight_userids = [];
 			$('table tbody tr').removeClass('highlight');
 		}
+		
+		function resetVariables(){
+			highlight_schoolcodes = [];
+			highlight_schoolnames = [];
+		}
 
 		function editMode() {
 			closeFloatingButton();
@@ -437,8 +442,7 @@
 									}
 									else{
 										cancelAnyMode();
-										highlight_schoolcodes = [];
-										highlight_schoolnames = [];
+										resetVariables();
 									}
 								});
 			}
@@ -453,7 +457,9 @@
 				clickToHide: false,
 				autoHide: false
 			});
+			$("#edit_schoolcode").prop("disabled", false);
 			var editform_values = $("#editform").serialize();
+			$("#edit_schoolcode").prop("disabled", true);
 			setTimeout(function() {
 			$.ajax({
 				type : 'POST',
@@ -492,7 +498,7 @@
 			$('#delete_container').show(1000);
 		}
 		function startDelete() {
-			if (highlight_userids.length > 0) {
+			if (highlight_schoolcodes.length > 0) {
 				$('#deleteModal').modal('show');
 			}
 		}
@@ -505,17 +511,14 @@
 			$.ajax({
 				type : 'POST',
 				data : {
-					userids : String(highlight_usercodes)
+					schoolcodes : String(highlight_schoolcodes)
 				},
 				url : 'schools_delete',
 				success : function(data) {
 					$('.notifyjs-wrapper').trigger('notify-hide');
 					$('#ajax_result').html(data);
 					cancelAnyMode();
-					highlight_userids = [];
-					highlight_usernames = [];
-					highlight_fullnames = [];
-					highlight_accttypes = [];
+					resetVariables();
 					reloadTable();
 				},
 				error : function(data) {

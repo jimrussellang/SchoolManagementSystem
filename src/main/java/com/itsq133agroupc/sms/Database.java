@@ -751,6 +751,7 @@ public class Database {
 				subject.add(rs.getString("CourseName"));
 				subject.add(rs.getString("CourseUnits"));
 				subject.add(rs.getString("Prerequisites"));
+				subject.add(rs.getString("Price"));
 				subjects.add(subject);
 			}
 		} catch (Exception e) {
@@ -761,7 +762,7 @@ public class Database {
 	
 	
 	public boolean addCourse(String courseID, String courseCode, String courseName, String courseUnits, String prerequisites,
-			String price, String status) {
+			String price) {
 
 		try {
 			connect();
@@ -770,15 +771,14 @@ public class Database {
 				courseID = "" + (new Random()).nextInt(9999); // random courseID
 			
 			String query = "INSERT INTO `courses` "
-					+ "(`CourseID`, `CourseCode`, `CourseName`, `CourseUnits`, `Prerequisites`, `Price`, 'Status') "
+					+ "(`CourseID`, `CourseCode`, `CourseName`, `CourseUnits`, `Prerequisites`, `Price`) "
 					+ "VALUES ('" 
 					+ courseID + "','" 
 					+ courseCode + "', '"
 					+ courseName + "', '" 
 					+ courseUnits + "', '" 
 					+ prerequisites + "', '" 
-					+ price + "', '" 
-					+ status + "';";
+					+ price + "');";
 			
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
@@ -792,13 +792,13 @@ public class Database {
 	}
 	
 	public boolean editCourse(String courseID, String courseCode, String courseName, String courseUnits, String prerequisites,
-			String price, String status) {
+			String price) {
 
 		try {
 			connect();
 						
 			String query = "UPDATE `courses` SET CourseCode = '"+ courseCode +"', CourseName = '"+ courseName +"', CourseUnits = '"+ courseUnits +"', "
-					+ "Prerequisites = '"+ prerequisites +"', Price = '"+ price +"', Status = '"+ status +"' WHERE CourseID = '"+ courseID +"';";
+					+ "Prerequisites = '"+ prerequisites +"', Price = '"+ price +"' WHERE CourseID = '"+ courseID +"';";
 			
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
@@ -811,7 +811,7 @@ public class Database {
 		return false;
 	}
 	
-	public boolean deleteCourses(String courseID) {
+	public boolean deleteCourse(String courseID) {
 		try {
 			String query = "UPDATE `courses` SET Status = 0 WHERE `courses`.`CourseID` = " + courseID;
 			connect();
@@ -883,6 +883,65 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public boolean addCurriculum(String currID, String currCode, String currYears, String currTerms) {
+
+		try {
+			connect();
+			// generate random data if empty
+			if (currID.trim().isEmpty())
+				currID = "" + (new Random()).nextInt(9999); // random courseID
+			
+			String query = "INSERT INTO `curriculums` "
+					+ "(`CurriculumID`, `CurriculumCode`, `Years`, `Terms`) "
+					+ "VALUES ('" 
+					+ currID + "','" 
+					+ currCode + "', '"
+					+ currYears + "', '" 
+					+ currTerms + "');";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean editCurriculum(String currID, String currCode, String years, String terms) {
+		try {
+			connect();
+			String query = "";
+
+			query = "UPDATE `curriculums` SET CurriculumCode = '" + currCode + "', Years = '" + years
+						+ "', Terms = '" + terms + "'  WHERE CurriculumID ='" + currID + "'";
+
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+
+	public boolean deleteCurriculum(String currID) {
+		try {
+			String query = "UPDATE `curriculums` SET Status = 0 WHERE `curriculums`.`CurriculumID` = " + currID;
+			connect();
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
 
 	public ArrayList<ArrayList<String>> retrieveSchools() {
 		ArrayList<ArrayList<String>> schools = new ArrayList<ArrayList<String>>();
@@ -926,6 +985,36 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public boolean editSchool(String schoolCode, String schoolName) {
+		try {
+			connect();
+			String query = "";
+
+				query = "UPDATE `schools` SET SchoolName = '" + schoolName + "'  WHERE SchoolCode ='" + schoolCode + "'";
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean deleteSchool(String schoolCode) {
+		try {
+			String query = "UPDATE `schools` SET Status = 0 WHERE `schools`.`SchoolCode` = '" + schoolCode + "'";
+			connect();
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
 
 	public ArrayList<ArrayList<String>> retrieveDegrees() {
 		ArrayList<ArrayList<String>> degrees = new ArrayList<ArrayList<String>>();
@@ -946,6 +1035,64 @@ public class Database {
 			System.out.println("Database Process Error! " + e);
 		}
 		return degrees;
+	}
+	
+	public boolean addDegree(String degreeID, String degreeCode, String degreeName, String degreeCurriculum) {
+		try {
+			connect();
+			// generate random data if empty
+			if (degreeID.trim().isEmpty())
+				degreeID = "" + (new Random()).nextInt(9999); // random Degree ID
+			if (degreeCode.trim().isEmpty())
+				degreeCode = new BigInteger(64, (new SecureRandom())).toString(32);// random Degree Code
+			if (degreeName.trim().isEmpty())
+				degreeName = new BigInteger(64, (new SecureRandom())).toString(32);// random Degree Name
+			if (degreeCurriculum.trim().isEmpty())
+				degreeCurriculum = new BigInteger(64, (new SecureRandom())).toString(32);// random Degree Curriculum
+			
+			String query = "INSERT INTO `degrees` " + "(`DegreeID`, " + "`DegreeCode`, " + "`DegreeName`, " + "`DegreeCurriculum`) " + "VALUES ('" + degreeID + "', " + "'" + degreeCode + "', "
+					+ "'" + degreeName + "', " + "'" + degreeCurriculum + "');";
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean editDegree(String degreeID, String degreeCode, String degreeName, String degreeCurriculum) {
+
+		try {
+			connect();
+						
+			String query = "UPDATE `degrees` SET DegreeCode = '"+ degreeCode +"', DegreeName = '"+ degreeName +"', DegreeCurriculum = "+ degreeCurriculum + " WHERE DegreeID = '"+ degreeID +"';";
+			
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+	
+	public boolean deleteDegree(String degreeID) {
+		try {
+			String query = "UPDATE `degrees` SET Status = 0 WHERE `degrees`.`DegreeID` = " + degreeID;
+			connect();
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
 	}
 
 	public ArrayList<ArrayList<String>> retrieveStudents() {

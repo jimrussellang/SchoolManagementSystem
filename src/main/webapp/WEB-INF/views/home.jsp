@@ -233,7 +233,7 @@
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
-		$("ul.sidebar-nav > li:eq(0)").addClass("active");
+		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass("active");
 	</script>
 
 </body>

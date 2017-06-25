@@ -52,6 +52,9 @@ public class HomeController {
 		//Attribute used for printing the page title
 		model.addAttribute("page_title", "Dashboard");
 		
+		//Menu Active Number
+		request.setAttribute("menuactivenum", 0);
+		
 		return "home";
 	}
 

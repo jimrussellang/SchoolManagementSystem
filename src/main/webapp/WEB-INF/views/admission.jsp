@@ -351,7 +351,7 @@
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
-		$("ul.sidebar-nav > li:eq(4)").addClass("active");
+		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass("active");
 	</script>
 
 	<!-- Script execution when page is done -->

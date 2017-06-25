@@ -42,7 +42,7 @@
 
 		<div class="app-container">
 
-			<%@ include file="include/nav.jsp" %>
+			<%@ include file="include/nav.jsp"%>
 
 			<div class="btn-floating" id="help-actions">
 				<div class="btn-bg"></div>
@@ -108,7 +108,7 @@
 										class="btn btn-xs btn-primary">?</button></a>
 							</div>
 							<div class="container-fluid">
-								<button id="btn_deleteselrecs" class="btn btn-sm btn-danger">Delete
+								<button id="btn_deleteselrecs" onClick="startDelete()" class="btn btn-sm btn-danger">Delete
 									Selected Records</button>
 							</div>
 						</div>
@@ -191,8 +191,10 @@
 								<div id="curriculum_editor_loadingmsg" class="title">Loading</div>
 							</div>
 							<div class="row">
-								<button class="btn btn-xs btn-primary" onClick="toggleYearPanels(1)">Expand All</button>
-								<button class="btn btn-xs btn-primary" onClick="toggleYearPanels(0)">Collapse All</button>
+								<button class="btn btn-xs btn-primary"
+									onClick="toggleYearPanels(1)">Expand All</button>
+								<button class="btn btn-xs btn-primary"
+									onClick="toggleYearPanels(0)">Collapse All</button>
 							</div>
 							<div id="curriculum_fullcontainer">
 								<div class="row">
@@ -317,7 +319,7 @@
 								<ul class="sort_style" id="subjects_container">
 								</ul>
 							</div>
-<!-- 							<button onClick="getInfo(1, 2)">Get Info!</button> -->
+							<!-- 							<button onClick="getInfo(1, 2)">Get Info!</button> -->
 							<button class="btn btn-success" onClick="saveCurriculumEdit()">Save</button>
 						</div>
 					</div>
@@ -342,7 +344,8 @@
 					<h4 class="modal-title">Add New Curriculum</h4>
 				</div>
 				<div class="modal-body">
-					<form id="addform" class="form form-horizontal">
+					<form id="addform" class="form form-horizontal" method="POST"
+						action="curriculums_add">
 						<div class="section">
 							<div class="section-body">
 								<div class="form-group">
@@ -369,14 +372,7 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label">Terms per year</label>
 									<div class="col-md-9">
-										<input id="add_termsperyear" name="termsperyear" type="number"
-											class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label">Units</label>
-									<div class="col-md-9">
-										<input id="add_units" name="units" type="number"
+										<input id="add_termsperyear" name="terms" type="number"
 											class="form-control" placeholder="">
 									</div>
 								</div>
@@ -433,15 +429,8 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label">Terms per year</label>
 									<div class="col-md-9">
-										<input id="edit_termsperyear" name="termsperyear"
+										<input id="edit_termsperyear" name="terms"
 											type="number" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label">Unit(s)</label>
-									<div class="col-md-9">
-										<input id="edit_units" name="units" type="number"
-											class="form-control" placeholder="">
 									</div>
 								</div>
 							</div>
@@ -451,7 +440,7 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-sm btn-default"
 						data-toggle="modal" data-target="#editCloseModal">Close</button>
-					<button onClick="highlight_curriculum_count++;" type="button"
+					<button onClick="confirmEdit()" type="button"
 						class="btn btn-sm btn-success">Save</button>
 				</div>
 			</div>
@@ -478,6 +467,28 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="deleteModal" role="dialog"
+		aria-labelledby="addModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Confirm Delete</h4>
+				</div>
+				<div class="modal-body">Are you sure you want to delete the
+					selected curriculums?</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default"
+						data-dismiss="modal">No</button>
+					<button type="button" onClick="confirmDelete()"
+						class="btn btn-sm btn-success" data-dismiss="modal">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- AJAX RESULT CONTAINER -->
 	<div id="ajax_result"></div>
@@ -487,7 +498,7 @@
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
-		$("ul.sidebar-nav > li:eq(4)").addClass("active");
+		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass("active");
 	</script>
 
 	<!-- Script execution when page is done -->
@@ -536,6 +547,7 @@
 			});
 		}
 		function addCurriculum() {
+			/*
 			if ($('#add_curriculumcode').val() != ''
 					|| $('#add_years').val() != ''
 					|| $('#add_termsperyear').val() != ''
@@ -553,13 +565,13 @@
 						alert("Error: " + data);
 					}
 				});
-			}
+			}*/
+			$("#addform").submit();
 		}
 		var highlight_curriculumid = [];
 		var highlight_curriculumcode = [];
 		var highlight_years = [];
 		var highlight_termsperyear = [];
-		var highlight_units = [];
 		function toggleTableHighlighter(state) {
 			//State 0 turns off Table Highlighter feature completely
 			//State 1 turns on single Table Highlighter feature
@@ -573,16 +585,14 @@
 						'click',
 						'tbody tr',
 						function(event) {
-							highlight_curriculumid[0] = $(this).children('th')
+							highlight_curriculumid[0] = $(this).children('th:eq(0)')
 									.text();
 							highlight_curriculumcode[0] = $(this).children(
-									'td:eq(0)').text();
-							highlight_years[0] = $(this).children('td:eq(1)')
+									'th:eq(1)').children('a').text();
+							highlight_years[0] = $(this).children('td:eq(0)')
 									.text();
 							highlight_termsperyear[0] = $(this).children(
-									'td:eq(2)').text();
-							highlight_units[0] = $(this).children('td:eq(3)')
-									.text();
+									'td:eq(1)').text();
 							$(this).addClass('highlight').siblings()
 									.removeClass('highlight');
 						});
@@ -604,22 +614,19 @@
 												highlight_years.splice(i, 1);
 												highlight_termsperyear.splice(
 														i, 1);
-												highlight_units.splice(i, 1);
 
 											}
 										}
 										$(this).removeClass('highlight')
 									} else {
 										highlight_curriculumid.push($(this)
-												.children('th').text());
+												.children('th:eq(0)').text());
 										highlight_curriculumcode.push($(this)
-												.children('td:eq(0)').text());
+												.children('th:eq(1)').children('a').text());
 										highlight_years.push($(this).children(
-												'td:eq(1)').text());
+												'td:eq(0)').text());
 										highlight_termsperyear.push($(this)
-												.children('td:eq(2)').text());
-										highlight_units.push($(this).children(
-												'td:eq(3)').text());
+												.children('td:eq(1)').text());
 										$(this).addClass('highlight');
 									}
 								});
@@ -629,6 +636,13 @@
 		function removeTableHighlights() {
 			highlight_curriculumid = [];
 			$('table tbody tr').removeClass('highlight');
+		}
+		
+		function resetVariables() {
+			highlight_curriculumid = [];
+			highlight_curriculumcode = [];
+			highlight_years = [];
+			highlight_termsperyear = [];
 		}
 
 		function editMode() {
@@ -641,20 +655,19 @@
 			$('#edit_container').show(1000);
 		}
 		var highlight_curriculum_count = 0;
-		var highlight_curriculum_count = 0;
+		var highlight_curriculum_count_total = 0;
 		function startEdit() {
+			if (highlight_curriculumid.length > 0) {
 			highlight_curriculum_count = 0;
 			highlight_curriculum_count_total = highlight_curriculumid.length;
 			$("#edit_curriculumid").val(
 					highlight_curriculumid[highlight_curriculum_count]);
-			$("#edit_coursecode").val(
+			$("#edit_curriculumcode").val(
 					highlight_curriculumcode[highlight_curriculum_count]);
-			$("#edit_coursecode").val(
+			$("#edit_years").val(
 					highlight_years[highlight_curriculum_count]);
-			$("#edit_coursecode").val(
+			$("#edit_termsperyear").val(
 					highlight_termsperyear[highlight_curriculum_count]);
-			$("#edit_accttype")
-					.val(highlight_units[highlight_curriculum_count]).change();
 			$('#editModal').modal({
 				backdrop : 'static',
 				keyboard : false
@@ -676,20 +689,48 @@
 									$("#edit_termsperyear")
 											.val(
 													highlight_termsperyear[highlight_curriculum_count]);
-									$("#edit_units")
-											.val(
-													highlight_units[highlight_curriculum_count]);
 									$('#editModal').modal({
 										backdrop : 'static',
 										keyboard : false
 									})
 								}
 							});
+			}
 		}
 		function cancelEdit() {
 			$('#editModal').off('hidden.bs.modal');
 			$('#editModal').modal('hide');
 		}
+		
+		function confirmEdit() {
+			$("#editform").notify('Saving...', {
+				className : 'info',
+				clickToHide : false,
+				autoHide : false
+			});
+			$("#edit_curriculumid").prop("disabled", false);
+			var editform_values = $("#editform").serialize();
+			$("#edit_curriculumid").prop("disabled", true);
+			setTimeout(function() {
+				$.ajax({
+					type : 'POST',
+					data : editform_values,
+					url : 'curriculums_edit',
+					success : function(data) {
+						highlight_curriculum_count++;
+						$('.notifyjs-wrapper').trigger('notify-hide');
+						$("#editModal").modal("hide");
+						$('#ajax_result').html(data);
+						reloadTable();
+					},
+					error : function(data) {
+						//$('#result').html(data);
+						alert(data);
+					}
+				});
+			}, 1500);
+		}
+		
 		function cancelAnyMode() {
 			$('#help-actions').show(500);
 			$('#help-actions-cancel').hide();
@@ -708,6 +749,36 @@
 			$('#mode').show();
 			$('#mode').text("DELETE MODE");
 			$('#delete_container').show(1000);
+		}
+		function startDelete() {
+			if (highlight_curriculumid.length > 0) {
+				$('#deleteModal').modal('show');
+			}
+		}
+		function confirmDelete() {
+			$.notify('Deleting records...', {
+				className : 'info',
+				clickToHide : false,
+				autoHide : false
+			});
+			$.ajax({
+				type : 'POST',
+				data : {
+					curriculumids : String(highlight_curriculumid)
+				},
+				url : 'curriculums_delete',
+				success : function(data) {
+					$('.notifyjs-wrapper').trigger('notify-hide');
+					$('#ajax_result').html(data);
+					cancelAnyMode();
+					resetVariables();
+					reloadTable();
+				},
+				error : function(data) {
+					//$('#result').html(data);
+					alert(data);
+				}
+			});
 		}
 		
 		function curriculumEditMode(curriculum, curriculum_id) {

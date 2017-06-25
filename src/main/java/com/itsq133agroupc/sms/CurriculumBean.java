@@ -5,13 +5,12 @@ import java.util.ArrayList;
 public class CurriculumBean {
  
 	private String curriculumid;
-    private String username;
-    private String password;
-    private String repassword;
-    private String fullname;
-    private String accttype;
-    private String userids;
+    private String curriculumcode;
+    private String years;
+    private String terms;
+    private String units;
     private String curriculumstructure;
+    private String curriculumids;
  
     public String getCurriculumid() {
         return curriculumid;
@@ -21,6 +20,38 @@ public class CurriculumBean {
         this.curriculumid = curriculumid;
     }
     
+    public String getCurriculumcode() {
+        return curriculumcode;
+    }
+ 
+    public void setCurriculumcode(String curriculumcode) {
+        this.curriculumcode = curriculumcode;
+    }
+    
+    public String getYears() {
+        return years;
+    }
+ 
+    public void setYears(String years) {
+        this.years = years;
+    }
+    
+    public String getTerms() {
+        return terms;
+    }
+ 
+    public void setTerms(String terms) {
+        this.terms = terms;
+    }
+    
+    public String getUnits() {
+        return units;
+    }
+ 
+    public void setUnits(String units) {
+        this.units = units;
+    }
+    
     public String getCurriculumstructure() {
         return curriculumstructure;
     }
@@ -28,52 +59,14 @@ public class CurriculumBean {
     public void setCurriculumstructure(String curriculumstructure) {
         this.curriculumstructure = curriculumstructure;
     }
-    public String getUsername() {
-        return username;
-    }
- 
-    public void setUsername(String username) {
-        this.username = username;
-    }
- 
-    public String getPassword() {
-        return password;
-    }
- 
-    public void setPassword(String password) {
-        this.password = password;
-    }
     
-    public String getRepassword() {
-        return repassword;
-    }
- 
-    public void setRepassword(String repassword) {
-        this.repassword = repassword;
-    }
     
-    public String getFullname() {
-        return fullname;
+    public String getCurriculumids() {
+        return curriculumids;
     }
  
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-    
-    public String getAccttype() {
-        return accttype;
-    }
- 
-    public void setAccttype(String accttype) {
-        this.accttype = accttype;
-    }
-    
-    public String getUserids() {
-        return userids;
-    }
- 
-    public void setUserids(String userids) {
-        this.userids = userids;
+    public void setCurriculumids(String curriculumids) {
+        this.curriculumids = curriculumids;
     }
  
 } 

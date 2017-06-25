@@ -49,6 +49,9 @@ public class CurriculumBuilderController {
 
 		Database database = new Database();
 		request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums());
+		
+		//Menu Active Number
+		request.setAttribute("menuactivenum", 3);
 
 		return "curriculum_builder";
 	}
@@ -227,6 +230,83 @@ public class CurriculumBuilderController {
 		}
 
 		return script;
+	}
+
+	// Adds new curriculum to the database
+	@RequestMapping(value = { "/curriculums_add" }, method = RequestMethod.POST)
+	public String accounts_add(Model model, HttpSession session,
+			@ModelAttribute("curriculumBean") CurriculumBean curriculumBean, HttpServletResponse response,
+			HttpServletRequest request) {
+		logger.info("A user has accessed added a new curriculum.");
+
+		// Checks if user is logged in. If not, redirects to Login page.
+		if (!logincontroller.isLoggedIn(session, response)) {
+			model.addAttribute("access_denied_msg", "You must login first to access this page!");
+			// Used for redirecting to current page after logging in
+			session.setAttribute("pageforward", request.getRequestURL());
+			return "login";
+		}
+
+		Database database = new Database();
+		boolean isAdded = false;
+
+		isAdded = database.addCurriculum("", curriculumBean.getCurriculumcode(), curriculumBean.getYears(),
+				curriculumBean.getTerms());
+
+		if (isAdded) {
+			model.addAttribute("notify_msg_state", "success");
+			model.addAttribute("notify_msg", "Successfully added a new curriculum!");
+		} else {
+			model.addAttribute("notify_msg_state", "error");
+			model.addAttribute("notify_msg",
+					"An error occurred adding a curriculum! Please check if values are correct.");
+		}
+
+		// Reload Accounts Table
+		request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums());
+
+		return "redirect:curriculum-builder";
+	}
+
+	// AJAX for Accounts Edit
+	@RequestMapping(value = { "/curriculums_edit" }, method = RequestMethod.POST)
+	public @ResponseBody String curriculums_edit(Model model, HttpSession session,
+			@ModelAttribute("curriculumBean") CurriculumBean curriculumBean, HttpServletResponse response,
+			HttpServletRequest request) {
+		logger.info("A user has edited a curricuklum in the curriculums table.");
+
+		Database database = new Database();
+		boolean isEdited = false;
+		isEdited = database.editCurriculum(curriculumBean.getCurriculumid(), curriculumBean.getCurriculumcode(),
+				curriculumBean.getYears(), curriculumBean.getTerms());
+
+		if (isEdited) {
+			return "<script>$.notify('Successfully edited curriculum', 'success');</script>";
+		} else {
+			return "<script>$.notify('An error has occurred!', 'error');</script>";
+		}
+
+	}
+
+	// AJAX for Accounts Delete
+	@RequestMapping(value = { "/curriculums_delete" }, method = RequestMethod.POST)
+	public @ResponseBody String curriculums_delete(Model model, HttpSession session,
+			@ModelAttribute("curriculumBean") CurriculumBean curriculumBean, HttpServletResponse response,
+			HttpServletRequest request) {
+		logger.info("A user has deleted some curriculums in the curriculums table.");
+
+		ArrayList<String> curriculumids = new ArrayList(Arrays.asList(curriculumBean.getCurriculumids().split(",")));
+
+		boolean result = false;
+		Database database = new Database();
+		for (int i = 0; i < curriculumids.size(); i++) {
+			result = database.deleteCurriculum(curriculumids.get(i));
+			if (result == false) {
+				return "<script>$.notify('An error has occurred!', 'error');</script>";
+			}
+		}
+
+		return "<script>$.notify('Successfully deleted curriculums', 'success');</script>";
 	}
 
 }

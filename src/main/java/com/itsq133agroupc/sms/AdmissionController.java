@@ -47,6 +47,9 @@ public class AdmissionController {
 
 		Database database = new Database();
 		request.setAttribute("admission_students-list", database.retrieveStudents());
+		
+		//Menu Active Number
+		request.setAttribute("menuactivenum", 3);
 		return "admission";
 	}
 

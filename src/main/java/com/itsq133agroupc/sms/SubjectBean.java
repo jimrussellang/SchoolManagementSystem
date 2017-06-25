@@ -10,6 +10,7 @@ public class SubjectBean {
     private float courseunits;
     private String prerequisites;
     private float price;
+    private String courseids;
  
     public String getCourseid() {
         return courseid;
@@ -51,5 +52,12 @@ public class SubjectBean {
     }
     public void setPrice(float price) {
         this.price = price;
+    }
+    
+    public String getCourseids() {
+        return courseids;
+    }
+    public void setCourseids(String courseids) {
+        this.courseids = courseids;
     }
 } 

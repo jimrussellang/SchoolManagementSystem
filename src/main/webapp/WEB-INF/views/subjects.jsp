@@ -34,13 +34,15 @@
 				<div class="toggle-content">
 					<ul class="actions">
 						<li><a onClick="reloadTable()">Refresh</a></li>
-						<li><a onClick="closeFloatingButton()" href="#" data-toggle="modal" data-target="#addModal">Add new subject</a></li>
+						<li><a onClick="closeFloatingButton()" href="#"
+							data-toggle="modal" data-target="#addModal">Add new subject</a></li>
 						<li><a onClick="editMode()">Edit existing subject</a></li>
 						<li><a onClick="deleteMode()">Delete existing subject</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="btn-floating" id="help-actions-cancel" style="display: none;">
+			<div class="btn-floating" id="help-actions-cancel"
+				style="display: none;">
 				<div class="btn-bg"></div>
 				<button type="button" class="btn btn-default btn-toggle"
 					data-toggle="toggle" data-target="#help-actions-cancel">
@@ -56,33 +58,35 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<div class="card">
-						<div class="card-header">Subjects List&nbsp;
+						<div class="card-header">
+							Subjects List&nbsp;
 							<kbd style="display: none;" id="mode"></kbd>
 						</div>
 						<div id="edit_container" style="display: none;"
 							class="container-fluid">
 							<div class="alert alert-success"
 								style="overflow: hidden; white-space: nowrap;">
-								<strong>You're in Edit Mode!</strong> Highlight all records to be modified
-								by clicking on them. Then, click on the "Edit Selected Records"
-								to begin editing.
+								<strong>You're in Edit Mode!</strong> Highlight all records to
+								be modified by clicking on them. Then, click on the "Edit
+								Selected Records" to begin editing.
 							</div>
 							<div class="container-fluid">
-								<button onClick="startEdit()" id="btn_editselrecs" class="btn btn-sm btn-primary">Edit
-									Selected Records</button>
+								<button onClick="startEdit()" id="btn_editselrecs"
+									class="btn btn-sm btn-primary">Edit Selected Records</button>
 							</div>
 						</div>
-						
+
 						<div id="delete_container" style="display: none;"
 							class="container-fluid">
 							<div class="alert alert-warning"
 								style="overflow: hidden; white-space: nowrap;">
-								<strong>You're in Delete Mode!</strong> Highlight all records to be deleted
-								by clicking on them. Then, click on the "Delete Selected Records"
-								to delete all selected records. NOTE: Once you delete them, it CANNOT BE UNDONE!
+								<strong>You're in Delete Mode!</strong> Highlight all records to
+								be deleted by clicking on them. Then, click on the "Delete
+								Selected Records" to delete all selected records. NOTE: Once you
+								delete them, it CANNOT BE UNDONE!
 							</div>
 							<div class="container-fluid">
-								<button id="btn_deleteselrecs" class="btn btn-sm btn-danger">Delete
+								<button id="btn_deleteselrecs" onClick="startDelete()" class="btn btn-sm btn-danger">Delete
 									Selected Records</button>
 							</div>
 						</div>
@@ -110,6 +114,7 @@
 										<th>Course Name</th>
 										<th>Course Unit(s)</th>
 										<th>Prerequisites</th>
+										<th>Price</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -153,44 +158,67 @@
 					<h4 class="modal-title">Add New Subject</h4>
 				</div>
 				<div class="modal-body">
-					<form id="addform" class="form form-horizontal">
+					<form id="addform" class="form form-horizontal" method="POST"
+						action="subjects_add">
 						<div class="section">
 							<div class="section-body">
 								<div class="form-group">
 									<label class="col-md-3 control-label">ID</label>
 									<div class="col-md-9">
-										<input id="add_id" name="id" type="text" class="form-control" placeholder="" disabled>
+										<input id="add_id" name="courseid" type="text"
+											class="form-control" placeholder="" disabled>
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Course Code</label>
 									<div class="col-md-9">
-										<input id="add_coursecode" name="coursecode" type="text" class="form-control" placeholder="">
+										<input id="add_coursecode" name="coursecode" type="text"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Course Name</label>
 									<div class="col-md-9">
-										<input id="add_coursename" name="coursename" type="text" class="form-control" placeholder="">
+										<input id="add_coursename" name="coursename" type="text"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Course Unit(s)</label>
 									<div class="col-md-9">
-										<input id="add_courseunits" name="courseunits" type="number" class="form-control" placeholder="">
+										<input id="add_courseunits" name="courseunits" type="number"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Prerequisite(s)</label>
 									<div class="col-md-4">
 										<div class="input-group">
-											<select id="add_prerequisites" name="prerequisites" class="select2">
-												<option value="none">None</option>	
-												<option value="sample1">Sample1</option>
-												<option value="sample2">Sample2</option>
-												<option value="sample3">Sample3</option>
+											<select id="add_prerequisites" name="prerequisites"
+												class="select2">
+												<option value="None">None</option>
+												<c:forEach var="subjects"
+													items='${requestScope["subjects_subjects-list"]}'>
+													<c:forEach var="subject" items="${subjects}"
+														varStatus="loop">
+														<c:choose>
+															<c:when test="${loop.index=='1'}">
+																<option value=<c:out value="${subject}" />>
+																	<c:out value="${subject}" />
+																</option>
+															</c:when>
+														</c:choose>
+													</c:forEach>
+												</c:forEach>
 											</select>
 										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Price</label>
+									<div class="col-md-9">
+										<input id="add_price" name="price" type="number"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 							</div>
@@ -218,44 +246,67 @@
 					<h4 class="modal-title">Edit Subject</h4>
 				</div>
 				<div class="modal-body">
-					<form id="editform" class="form form-horizontal" method="POST" action="accounts_edit">
+					<form id="editform" class="form form-horizontal" method="POST"
+						action="accounts_edit">
 						<div class="section">
 							<div class="section-body">
 								<div class="form-group">
 									<label class="col-md-3 control-label">ID</label>
 									<div class="col-md-9">
-										<input id="edit_id" name="id" type="text" class="form-control" placeholder="" disabled>
+										<input id="edit_id" name="courseid" type="text"
+											class="form-control" placeholder="" disabled>
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Course Code</label>
 									<div class="col-md-9">
-										<input id="edit_coursecode" name="coursecode" type="text" class="form-control" placeholder="">
+										<input id="edit_coursecode" name="coursecode" type="text"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Course Name</label>
 									<div class="col-md-9">
-										<input id="edit_coursename" name="coursename" type="text" class="form-control" placeholder="">
+										<input id="edit_coursename" name="coursename" type="text"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Course Unit(s)</label>
 									<div class="col-md-9">
-										<input id="edit_courseunits" name="courseunits" type="number" class="form-control" placeholder="">
+										<input id="edit_courseunits" name="courseunits" type="number"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Prerequisite(s)</label>
 									<div class="col-md-4">
 										<div class="input-group">
-											<select id="edit_prerequisites" name="prerequisites" class="select2">
-												<option value="none">None</option>	
-												<option value="sample1">Sample1</option>
-												<option value="sample2">Sample2</option>
-												<option value="sample3">Sample3</option>
+											<select id="edit_prerequisites" name="prerequisites"
+												class="select2">
+												<option value="None">None</option>
+												<c:forEach var="subjects"
+													items='${requestScope["subjects_subjects-list"]}'>
+													<c:forEach var="subject" items="${subjects}"
+														varStatus="loop">
+														<c:choose>
+															<c:when test="${loop.index=='1'}">
+																<option value=<c:out value="${subject}" />>
+																	<c:out value="${subject}" />
+																</option>
+															</c:when>
+														</c:choose>
+													</c:forEach>
+												</c:forEach>
 											</select>
 										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Price</label>
+									<div class="col-md-9">
+										<input id="edit_price" name="price" type="number"
+											class="form-control" placeholder="">
 									</div>
 								</div>
 							</div>
@@ -265,13 +316,14 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-sm btn-default"
 						data-toggle="modal" data-target="#editCloseModal">Close</button>
-					<button onClick="highlight_subjects_count++;" type="button"
+					<button onClick="confirmEdit()" type="button"
 						class="btn btn-sm btn-success">Save</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="editCloseModal" role="dialog" aria-labelledby="addModal">
+	<div class="modal fade" id="editCloseModal" role="dialog"
+		aria-labelledby="addModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -281,19 +333,39 @@
 					</button>
 					<h4 class="modal-title">Confirm Cancel</h4>
 				</div>
-				<div class="modal-body">
-					Cancel editing?
-				</div>
+				<div class="modal-body">Cancel editing?</div>
 				<div class="modal-footer">
-					<button type="button" onClick="startEdit()" class="btn btn-sm btn-default"
-						data-dismiss="modal">No</button>
+					<button type="button" onClick="startEdit()"
+						class="btn btn-sm btn-default" data-dismiss="modal">No</button>
 					<button type="button" onClick="cancelEdit()"
 						class="btn btn-sm btn-success" data-dismiss="modal">Yes</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+	<div class="modal fade" id="deleteModal" role="dialog"
+		aria-labelledby="addModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Confirm Delete</h4>
+				</div>
+				<div class="modal-body">Are you sure you want to delete the
+					selected records?</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default"
+						data-dismiss="modal">No</button>
+					<button type="button" onClick="confirmDelete()"
+						class="btn btn-sm btn-success" data-dismiss="modal">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- AJAX RESULT CONTAINER -->
 	<div id="ajax_result"></div>
 
@@ -302,7 +374,7 @@
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
-		$("ul.sidebar-nav > li:eq(4)").addClass("active");
+		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass("active");
 	</script>
 
 	<!-- Script execution when page is done -->
@@ -326,27 +398,33 @@
 				$("#table_container").addClass("__loading");
 			}
 		}
- 		function reloadTable(){
+		function reloadTable() {
 			closeFloatingButton();
 			toggleTableLoad();
 			$('table').DataTable().clear().draw();
 			$.ajax({
 				type : 'POST',
-				url : 'accounts_reloadtable',
+				url : 'subjects_reloadtable',
 				success : function(data) {
 					$('#ajax_result').html(data);
 					toggleTableLoad();
-					$('table tr td:first-child').replaceTag("<th scope='row'>", false);
+					if ($('table tr td:nth-child(5)').html() == "null") {
+						$('table tr td:nth-child(5)').html("");
+					}
+					$('table tr td:first-child').replaceTag("<th scope='row'>",
+							false);
 				},
 				error : function(data) {
 					//$('#result').html(data);
 					alert(data);
 				}
 			});
-		} 
+		}
 		function addSubject() {
-			if ( $('#add_coursecode').val() != '' && $('#add_coursename').val() != '' && $('#add_courseunits').val() != ''){
-				var subjectData = $('#addform').serialize(); 
+			if ($('#add_coursecode').val() != ''
+					&& $('#add_coursename').val() != ''
+					&& $('#add_courseunits').val() != '') {
+				/*var subjectData = $('#addform').serialize(); 
 				$.ajax({
 					type: 'POST',
 					url: 'subjects_add',
@@ -358,7 +436,8 @@
 					error : function(data) {
 						alert("Error: " + data);
 					}
-				});
+				});*/
+				$("#addform").submit();
 			}
 		}
 		var highlight_id = [];
@@ -366,6 +445,7 @@
 		var highlight_coursename = [];
 		var highlight_courseunits = [];
 		var highlight_prerequisites = [];
+		var highlight_price = [];
 		function toggleTableHighlighter(state) {
 			//State 0 turns off Table Highlighter feature completely
 			//State 1 turns on single Table Highlighter feature
@@ -380,11 +460,18 @@
 						'tbody tr',
 						function(event) {
 							highlight_id[0] = $(this).children('th').text();
-							highlight_coursecode[0] = $(this).children('td:eq(0)').text();
-							highlight_coursename[0] = $(this).children('td:eq(1)').text();
-							highlight_courseunits[0] = $(this).children('td:eq(2)').text();
-							highlight_prerequisites[0] = $(this).children('td:eq(3)').text();
-							$(this).addClass('highlight').siblings().removeClass('highlight');
+							highlight_coursecode[0] = $(this).children(
+									'td:eq(0)').text();
+							highlight_coursename[0] = $(this).children(
+									'td:eq(1)').text();
+							highlight_courseunits[0] = $(this).children(
+									'td:eq(2)').text();
+							highlight_prerequisites[0] = $(this).children(
+									'td:eq(3)').text();
+							highlight_price[0] = $(this).children('td:eq(4)')
+									.text();
+							$(this).addClass('highlight').siblings()
+									.removeClass('highlight');
 						});
 			} else if (state == 2) {
 				$('table').off('click');
@@ -395,22 +482,35 @@
 								function(event) {
 									if ($(this).hasClass('highlight')) {
 										for (var i = highlight_id.length - 1; i >= 0; i--) {
-											if (highlight_id[i] == $(this).children('th').text()) {
+											if (highlight_id[i] == $(this)
+													.children('th').text()) {
 												highlight_id.splice(i, 1);
-												highlight_coursecode.splice(i, 1);
-												highlight_coursename.splice(i, 1);
-												highlight_courseunits.splice(i, 1);
-												highlight_prerequisites.splice(i, 1);
-												
+												highlight_coursecode.splice(i,
+														1);
+												highlight_coursename.splice(i,
+														1);
+												highlight_courseunits.splice(i,
+														1);
+												highlight_prerequisites.splice(
+														i, 1);
+												highlight_price.splice(i, 1);
+
 											}
 										}
 										$(this).removeClass('highlight')
 									} else {
-										highlight_id.push($(this).children('th').text());
-										highlight_coursecode.push($(this).children('td:eq(0)').text());
-										highlight_coursename.push($(this).children('td:eq(1)').text());
-										highlight_courseunits.push($(this).children('td:eq(2)').text());
-										highlight_prerequisites.push($(this).children('td:eq(3)').text());
+										highlight_id.push($(this)
+												.children('th').text());
+										highlight_coursecode.push($(this)
+												.children('td:eq(0)').text());
+										highlight_coursename.push($(this)
+												.children('td:eq(1)').text());
+										highlight_courseunits.push($(this)
+												.children('td:eq(2)').text());
+										highlight_prerequisites.push($(this)
+												.children('td:eq(3)').text());
+										highlight_price.push($(this).children(
+												'td:eq(4)').text());
 										$(this).addClass('highlight');
 									}
 								});
@@ -420,6 +520,15 @@
 		function removeTableHighlights() {
 			highlight_id = [];
 			$('table tbody tr').removeClass('highlight');
+		}
+
+		function resetVariables() {
+			highlight_id = [];
+			highlight_coursecode = [];
+			highlight_coursename = [];
+			highlight_courseunits = [];
+			highlight_prerequisites = [];
+			highlight_price = [];
 		}
 
 		function editMode() {
@@ -437,33 +546,88 @@
 			highlight_subjects_count = 0;
 			highlight_subjects_count_total = highlight_id.length;
 			$("#edit_id").val(highlight_id[highlight_subjects_count]);
-			$("#edit_coursecode").val(highlight_coursecode[highlight_subjects_count]);
-			$("#edit_coursecode").val(highlight_coursename[highlight_subjects_count]);
-			$("#edit_coursecode").val(highlight_courseunits[highlight_subjects_count]);
-			$("#edit_accttype").val(highlight_prerequisites[highlight_subjects_count]).change();
+			$("#edit_coursecode").val(
+					highlight_coursecode[highlight_subjects_count]);
+			$("#edit_coursename").val(
+					highlight_coursename[highlight_subjects_count]);
+			$("#edit_courseunits").val(
+					highlight_courseunits[highlight_subjects_count]);
+			$("#edit_prerequisites").val(
+					highlight_prerequisites[highlight_subjects_count]).change();
+			$("#edit_price").val(highlight_price[highlight_subjects_count]);
 			$('#editModal').modal({
-			    backdrop: 'static',
-			    keyboard: false
+				backdrop : 'static',
+				keyboard : false
 			})
-			$('#editModal').on('hidden.bs.modal', function(){
-				if(highlight_subjects_count < highlight_subjects_count_total){
-					$("#edit_userid").val(highlight_id[highlight_subjects_count]);
-					$("#edit_username").val(highlight_coursecode[highlight_subjects_count]);
-					$("#edit_coursecode").val(highlight_coursename[highlight_subjects_count]);
-					$("#edit_coursecode").val(highlight_courseunits[highlight_subjects_count]);
-					$("#edit_accttype").val(highlight_prerequisites[highlight_subjects_count]).change();
-					$('#editModal').modal({
-					    backdrop: 'static',
-					    keyboard: false
-					})
-				}
-			});
+			$('#editModal')
+					.on(
+							'hidden.bs.modal',
+							function() {
+								if (highlight_subjects_count < highlight_subjects_count_total) {
+									$("#edit_id")
+											.val(
+													highlight_id[highlight_subjects_count]);
+									$("#edit_coursecode")
+											.val(
+													highlight_coursecode[highlight_subjects_count]);
+									$("#edit_coursename")
+											.val(
+													highlight_coursename[highlight_subjects_count]);
+									$("#edit_courseunits")
+											.val(
+													highlight_courseunits[highlight_subjects_count]);
+									$("#edit_prerequisites")
+											.val(
+													highlight_prerequisites[highlight_subjects_count])
+											.change();
+									$("#edit_price")
+											.val(
+													highlight_price[highlight_subjects_count]);
+									$('#editModal').modal({
+										backdrop : 'static',
+										keyboard : false
+									})
+								} else {
+									cancelAnyMode();
+									resetVariables();
+								}
+							});
 		}
-		function cancelEdit(){
+		function cancelEdit() {
 			$('#editModal').off('hidden.bs.modal');
 			$('#editModal').modal('hide');
 		}
-		function cancelAnyMode(){
+
+		function confirmEdit() {
+			$("#editform").notify('Saving...', {
+				className : 'info',
+				clickToHide : false,
+				autoHide : false
+			});
+			$("#edit_id").prop("disabled", false);
+			var editform_values = $("#editform").serialize();
+			$("#edit_id").prop("disabled", true);
+			setTimeout(function() {
+				$.ajax({
+					type : 'POST',
+					data : editform_values,
+					url : 'subjects_edit',
+					success : function(data) {
+						highlight_subjects_count++;
+						$('.notifyjs-wrapper').trigger('notify-hide');
+						$("#editModal").modal("hide");
+						$('#ajax_result').html(data);
+						reloadTable();
+					},
+					error : function(data) {
+						//$('#result').html(data);
+						alert(data);
+					}
+				});
+			}, 1500);
+		}
+
+		function cancelAnyMode() {
 			$('#help-actions').show(500);
 			$('#help-actions-cancel').hide();
 			toggleTableHighlighter(0);
@@ -480,6 +644,36 @@
 			$('#mode').show();
 			$('#mode').text("DELETE MODE");
 			$('#delete_container').show(1000);
+		}
+		function startDelete() {
+			if (highlight_id.length > 0) {
+				$('#deleteModal').modal('show');
+			}
+		}
+		function confirmDelete() {
+			$.notify('Deleting records...', {
+				className : 'info',
+				clickToHide : false,
+				autoHide : false
+			});
+			$.ajax({
+				type : 'POST',
+				data : {
+					courseids : String(highlight_id)
+				},
+				url : 'subjects_delete',
+				success : function(data) {
+					$('.notifyjs-wrapper').trigger('notify-hide');
+					$('#ajax_result').html(data);
+					cancelAnyMode();
+					resetVariables();
+					reloadTable();
+				},
+				error : function(data) {
+					//$('#result').html(data);
+					alert(data);
+				}
+			});
 		}
 	</script>
 </body>

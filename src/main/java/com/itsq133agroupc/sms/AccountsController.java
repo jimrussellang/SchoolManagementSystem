@@ -47,6 +47,9 @@ public class AccountsController {
 
 		Database database = new Database();
 		request.setAttribute("accounts_accounts-list", database.retrieveAccounts());
+		
+		//Menu Active Number
+		request.setAttribute("menuactivenum", 1);
 		return "accounts";
 	}
 
@@ -68,7 +71,7 @@ public class AccountsController {
 		boolean isAdded = false;
 		// Prevents admin conflict
 		if (!accountBean.getUsername().toLowerCase().equals("admin")) {
-			isAdded = database.addAccount(accountBean.getUserid(), accountBean.getUsername(), accountBean.getAccttype(),
+			isAdded = database.addAccount("", accountBean.getUsername(), accountBean.getAccttype(),
 					accountBean.getPassword(), accountBean.getFullname());
 		}
 		if (isAdded) {
