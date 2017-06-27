@@ -46,7 +46,18 @@ public class AccountsController {
 		model.addAttribute("page_title", "Accounts");
 
 		Database database = new Database();
-		request.setAttribute("accounts_accounts-list", database.retrieveAccounts());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("BM")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(1, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(3, session.getAttribute("login_school").toString().trim()));
+		}
 		
 		//Menu Active Number
 		request.setAttribute("menuactivenum", 1);
@@ -71,6 +82,10 @@ public class AccountsController {
 		boolean isAdded = false;
 		// Prevents admin conflict
 		if (!accountBean.getUsername().toLowerCase().equals("admin")) {
+			//Sets up the appropriate School Prefix
+			if(session.getAttribute("login_school") != null){
+				accountBean.setUsername(session.getAttribute("login_school").toString().trim() + "." + accountBean.getUsername());
+			}
 			isAdded = database.addAccount("", accountBean.getUsername(), accountBean.getAccttype(),
 					accountBean.getPassword(), accountBean.getFullname());
 		}
@@ -84,7 +99,18 @@ public class AccountsController {
 		}
 
 		// Reload Accounts Table
-		request.setAttribute("accounts_accounts-list", database.retrieveAccounts());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("BM")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(1, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(3, session.getAttribute("login_school").toString().trim()));
+		}
 
 		return "redirect:accounts";
 	}
@@ -97,7 +123,18 @@ public class AccountsController {
 		logger.info("A user has reloaded accounts table.");
 		String script = "<script>";
 		Database database = new Database();
-		request.setAttribute("accounts_accounts-list", database.retrieveAccounts());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("BM")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(1, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("accounts_accounts-list", database.retrieveAccounts(3, session.getAttribute("login_school").toString().trim()));
+		}
 		ArrayList<ArrayList<String>> accounts = (ArrayList<ArrayList<String>>) request
 				.getAttribute("accounts_accounts-list");
 		script = script.concat("var dataSet = [");
@@ -155,8 +192,19 @@ public class AccountsController {
 		boolean isEdited = false;
 		// Prevents admin conflict
 		if (!accountBean.getUsername().toLowerCase().equals("admin")) {
-			isEdited = database.editAccount(accountBean.getUserid(), accountBean.getUsername(), accountBean.getAccttype(),
-					accountBean.getPassword(), accountBean.getFullname());
+			if(session.getAttribute("login_accounttype").equals("admin")){
+				isEdited = database.editAccount(accountBean.getUserid(), accountBean.getUsername(), accountBean.getAccttype(),
+						accountBean.getPassword(), accountBean.getFullname());
+			}
+			else{
+				if(accountBean.getUsername().startsWith(session.getAttribute("login_school").toString().trim() + ".")){
+					isEdited = database.editAccount(accountBean.getUserid(), accountBean.getUsername(), accountBean.getAccttype(),
+							accountBean.getPassword(), accountBean.getFullname());
+				}
+				else{
+					isEdited = false;
+				}
+			}
 		}
 		if (isEdited) {
 			return "<script>$.notify('Successfully edited record', 'success');</script>";

@@ -48,10 +48,21 @@ public class CurriculumBuilderController {
 		model.addAttribute("page_title", "Curriculum Builder");
 
 		Database database = new Database();
-		request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(3, session.getAttribute("login_school").toString().trim()));
+		}
 		
 		//Menu Active Number
 		request.setAttribute("menuactivenum", 3);
+		if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("menuactivenum", 2);
+		}
 
 		return "curriculum_builder";
 	}
@@ -64,7 +75,15 @@ public class CurriculumBuilderController {
 		logger.info("A user has reloaded Curriculums table.");
 		String script = "<script>";
 		Database database = new Database();
-		request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(3, session.getAttribute("login_school").toString().trim()));
+		}
 		ArrayList<ArrayList<String>> curriculums = (ArrayList<ArrayList<String>>) request
 				.getAttribute("curriculums_curriculums-list");
 		script = script.concat("var dataSet = [");
@@ -75,7 +94,8 @@ public class CurriculumBuilderController {
 			script = script.concat("'" + curriculum.get(1) + "',");
 			script = script.concat("'" + curriculum.get(2) + "',");
 			script = script.concat("'" + curriculum.get(3) + "',");
-			script = script.concat("'" + curriculum.get(4) + "'");
+			script = script.concat("'" + curriculum.get(4) + "',");
+			script = script.concat("'" + curriculum.get(5) + "'");
 			script = script.concat("]");
 			if (i < curriculum.size() - 1) {
 				script = script.concat(",");
@@ -97,7 +117,13 @@ public class CurriculumBuilderController {
 		logger.info("A user has accessed the Curriculum Editor.");
 		String script = "<script>";
 		Database database = new Database();
-		ArrayList<ArrayList<String>> curriculums = database.retrieveSubjects();
+		ArrayList<ArrayList<String>> curriculums = new ArrayList<ArrayList<String>>();
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			curriculums = database.retrieveSubjects(0, "");
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			curriculums = database.retrieveSubjects(2, session.getAttribute("login_school").toString().trim());
+		}
 		for (int i = 0; i < curriculums.size(); i++) {
 			ArrayList<String> curriculum = curriculums.get(i);
 			script = script.concat("$('#subjects_container').append('<li id=\"subj_" + curriculum.get(0) + "\">" + "<b>"
@@ -219,8 +245,19 @@ public class CurriculumBuilderController {
 		logger.info("A user has saved a curriculum's structure.");
 
 		Database database = new Database();
+		//Count total units and total price
+		int units = 0;
+		float totalprice = 0;
+		String temp_cs = curriculumBean.getCurriculumstructure();
+		String temp_cs_split[] = temp_cs.split("[|]");
+		for(int i = 1; i<temp_cs_split.length; i=i+2){
+			units = units + database.getSubjectUnits(temp_cs_split[i]);
+			totalprice = totalprice + database.getSubjectPrice(temp_cs_split[i]);
+		}
+		
+		
 		boolean result = database.saveCurriculumStructure(curriculumBean.getCurriculumid(),
-				curriculumBean.getCurriculumstructure());
+				curriculumBean.getCurriculumstructure(), units, totalprice);
 		String script = "";
 
 		if (result == true) {
@@ -250,6 +287,10 @@ public class CurriculumBuilderController {
 		Database database = new Database();
 		boolean isAdded = false;
 
+		//Sets up the appropriate School Prefix
+		if(session.getAttribute("login_school") != null){
+			curriculumBean.setCurriculumcode(session.getAttribute("login_school").toString().trim() + "." + curriculumBean.getCurriculumcode());
+		}
 		isAdded = database.addCurriculum("", curriculumBean.getCurriculumcode(), curriculumBean.getYears(),
 				curriculumBean.getTerms());
 
@@ -262,8 +303,16 @@ public class CurriculumBuilderController {
 					"An error occurred adding a curriculum! Please check if values are correct.");
 		}
 
-		// Reload Accounts Table
-		request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums());
+		// Reload Curriculums Table
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("curriculums_curriculums-list", database.retrieveCurriculums(3, session.getAttribute("login_school").toString().trim()));
+		}
 
 		return "redirect:curriculum-builder";
 	}
@@ -277,8 +326,19 @@ public class CurriculumBuilderController {
 
 		Database database = new Database();
 		boolean isEdited = false;
-		isEdited = database.editCurriculum(curriculumBean.getCurriculumid(), curriculumBean.getCurriculumcode(),
-				curriculumBean.getYears(), curriculumBean.getTerms());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			isEdited = database.editCurriculum(curriculumBean.getCurriculumid(), curriculumBean.getCurriculumcode(),
+					curriculumBean.getYears(), curriculumBean.getTerms());
+		}
+		else{
+			if(curriculumBean.getCurriculumcode().startsWith(session.getAttribute("login_school").toString().trim() + ".")){
+				isEdited = database.editCurriculum(curriculumBean.getCurriculumid(), curriculumBean.getCurriculumcode(),
+						curriculumBean.getYears(), curriculumBean.getTerms());
+			}
+			else{
+				isEdited = false;
+			}
+		}
 
 		if (isEdited) {
 			return "<script>$.notify('Successfully edited curriculum', 'success');</script>";

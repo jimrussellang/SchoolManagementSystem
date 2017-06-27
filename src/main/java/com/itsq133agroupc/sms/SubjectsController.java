@@ -42,10 +42,21 @@ public class SubjectsController {
 		model.addAttribute("page_title", "Subjects");
 
 		Database database = new Database();
-		request.setAttribute("subjects_subjects-list", database.retrieveSubjects());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(3, session.getAttribute("login_school").toString().trim()));
+		}
 		
 		//Menu Active Number
 		request.setAttribute("menuactivenum", 3);
+		if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("menuactivenum", 2);
+		}
 		return "subjects";
 	}
 
@@ -66,6 +77,10 @@ public class SubjectsController {
 		Database database = new Database();
 		boolean isAdded = false;
 
+		//Sets up the appropriate School Prefix
+		if(session.getAttribute("login_school") != null){
+			subjectBean.setCoursecode(session.getAttribute("login_school").toString().trim() + "." + subjectBean.getCoursecode());
+		}
 		isAdded = database.addCourse("", subjectBean.getCoursecode(),
 				subjectBean.getCoursename(), String.valueOf(subjectBean.getCourseunits()),
 				subjectBean.getPrerequisites(), String.valueOf(subjectBean.getPrice()));
@@ -78,8 +93,16 @@ public class SubjectsController {
 			model.addAttribute("notify_msg", "An error occurred adding a subject! Please check if values are correct.");
 		}
 
-		// Reload Accounts Table
-		request.setAttribute("subjects_subjects-list", database.retrieveAccounts());
+		// Reload Subjects Table
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(3, session.getAttribute("login_school").toString().trim()));
+		}
 
 		return "redirect:subjects";
 	}
@@ -92,7 +115,15 @@ public class SubjectsController {
 		logger.info("A user has reloaded subjects table.");
 		String script = "<script>";
 		Database database = new Database();
-		request.setAttribute("subjects_subjects-list", database.retrieveSubjects());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("subjects_subjects-list", database.retrieveSubjects(3, session.getAttribute("login_school").toString().trim()));
+		}
 		ArrayList<ArrayList<String>> subjects = (ArrayList<ArrayList<String>>) request
 				.getAttribute("subjects_subjects-list");
 		script = script.concat("var dataSet = [");
@@ -127,10 +158,22 @@ public class SubjectsController {
 
 		Database database = new Database();
 		boolean isEdited = false;
-		// Prevents admin conflict
-		isEdited = database.editCourse(subjectBean.getCourseid(), subjectBean.getCoursecode(),
-				subjectBean.getCoursename(), String.valueOf(subjectBean.getCourseunits()),
-				subjectBean.getPrerequisites(), String.valueOf(subjectBean.getPrice()));
+		
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			isEdited = database.editCourse(subjectBean.getCourseid(), subjectBean.getCoursecode(),
+					subjectBean.getCoursename(), String.valueOf(subjectBean.getCourseunits()),
+					subjectBean.getPrerequisites(), String.valueOf(subjectBean.getPrice()));
+		}
+		else{
+			if(subjectBean.getCoursecode().startsWith(session.getAttribute("login_school").toString().trim() + ".")){
+				isEdited = database.editCourse(subjectBean.getCourseid(), subjectBean.getCoursecode(),
+						subjectBean.getCoursename(), String.valueOf(subjectBean.getCourseunits()),
+						subjectBean.getPrerequisites(), String.valueOf(subjectBean.getPrice()));
+			}
+			else{
+				isEdited = false;
+			}
+		}
 
 		if (isEdited) {
 			return "<script>$.notify('Successfully edited subject', 'success');</script>";

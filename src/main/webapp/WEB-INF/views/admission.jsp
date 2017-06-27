@@ -34,9 +34,7 @@
 				<div class="toggle-content">
 					<ul class="actions">
 						<li><a onClick="reloadTable()">Refresh</a></li>
-						<li><a onClick="closeFloatingButton()" href="#" data-toggle="modal" data-target="#addModal">Add new students</a></li>
-						<li><a onClick="editMode()">Edit existing students</a></li>
-						<li><a onClick="deleteMode()">Delete existing students</a></li>
+						<li><a onClick="closeFloatingButton()" href="#" data-toggle="modal" data-target="#addModal">Admit new students</a></li>
 					</ul>
 				</div>
 			</div>
@@ -122,6 +120,7 @@
 										<th>User ID</th>
 										<th>User Name</th>
 										<th>Full Name</th>
+										<th>Degree</th>
 										<th>Admission Date</th>
 									</tr>
 								</thead>
@@ -163,11 +162,11 @@
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title">Add New Account</h4>
+					<h4 class="modal-title">Admit New Student</h4>
 				</div>
 				<div class="modal-body">
 					<form id="addform" class="form form-horizontal" method="POST"
-						action="accounts_add">
+						action="admission_add">
 						<div class="section">
 							<div class="section-body">
 								<div class="form-group">
@@ -206,13 +205,26 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-md-3 control-label">Account Type</label>
+									<label class="col-md-3 control-label">Degree</label>
 									<div class="col-md-4">
 										<div class="input-group">
-											<select id="accttype" name="accttype" class="select2">
-												<option value="BM">Businessman</option>
-												<option value="SCH">School Admin</option>
-												<option value="ST">Student</option>
+											<input id="accttype" name="accttype" type="hidden" value="ST">
+											<select id="degreeid" name="degreeid" class="select2">
+												<c:forEach var="degrees"
+													items='${requestScope["admission_degrees-list"]}'>
+													<c:forEach var="degree" items="${degrees}"
+														varStatus="loop">
+														<c:choose>
+															<c:when test="${loop.index=='0'}">
+																<option value=<c:out value="${degree}" />>
+															</c:when>
+															<c:when test="${loop.index=='1'}">
+																	<c:out value="${degree}" />
+																</option>
+															</c:when>
+														</c:choose>
+													</c:forEach>
+												</c:forEach>
 											</select>
 										</div>
 									</div>
@@ -225,7 +237,7 @@
 					<button type="button" class="btn btn-sm btn-default"
 						data-dismiss="modal">Close</button>
 					<button onClick="addAccount()" type="button"
-						class="btn btn-sm btn-success">Add Account</button>
+						class="btn btn-sm btn-success">Admit Student</button>
 				</div>
 			</div>
 		</div>

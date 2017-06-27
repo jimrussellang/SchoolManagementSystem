@@ -69,7 +69,7 @@ public class SchoolsController {
 
 		Database database = new Database();
 		boolean isAdded = false;
-		// Prevents admin conflict
+		
 		isAdded = database.addSchool(schoolBean.getSchoolcode(), schoolBean.getSchoolname());
 
 		if (isAdded) {

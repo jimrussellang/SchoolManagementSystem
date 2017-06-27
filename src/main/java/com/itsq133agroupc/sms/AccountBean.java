@@ -11,6 +11,7 @@ public class AccountBean {
     private String fullname;
     private String accttype;
     private String userids;
+    private String degreeid;
  
     public String getUserid() {
         return userid;
@@ -66,5 +67,6 @@ public class AccountBean {
     public void setUserids(String userids) {
         this.userids = userids;
     }
+    
  
 } 

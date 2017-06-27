@@ -136,6 +136,7 @@
 										<th>Years</th>
 										<th>Terms per Year</th>
 										<th>Units</th>
+										<th>Total Price</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -394,10 +395,6 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
 					<h4 class="modal-title">Edit Curriculum</h4>
 				</div>
 				<div class="modal-body">
@@ -694,6 +691,10 @@
 										keyboard : false
 									})
 								}
+								else{
+									cancelAnyMode();
+									resetVariables();
+								}
 							});
 			}
 		}
@@ -957,6 +958,7 @@
 					$('.notifyjs-wrapper').trigger('notify-hide');
 					$('#ajax_result').html(data);
 					cancelAnyMode();
+					reloadTable();
 				},
 				error : function(data) {
 					//$('#result').html(data);

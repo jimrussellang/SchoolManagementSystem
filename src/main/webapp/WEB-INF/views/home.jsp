@@ -240,6 +240,6 @@
 
 <!-- Temp -->
 <script>
-	alert("Hello! What you're seeing here is just a temporary placeholder of our project's early UI concept.\n\nTo access current development pages, head over to DEVELOPER PAGES navigation.\n\n\nThank you!");
+	//alert("Hello! What you're seeing here is just a temporary placeholder of our project's early UI concept.\n\nTo access current development pages, head over to DEVELOPER PAGES navigation.\n\n\nThank you!");
 </script>
 </html>

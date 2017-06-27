@@ -646,11 +646,20 @@ public class Database {
 		return fullname;
 	}
 
-	public ArrayList<ArrayList<String>> retrieveAccounts() {
+	public ArrayList<ArrayList<String>> retrieveAccounts(int state, String school) {
 		ArrayList<ArrayList<String>> accounts = new ArrayList<ArrayList<String>>();
 		try {
 			connect();
-			String query = "SELECT * FROM accounts WHERE Status = 1";
+			String query = "";
+			if(state == 0){
+				query = "SELECT * FROM accounts WHERE Status = 1";
+			}
+			else if(state == 1){
+				query = "SELECT * FROM accounts WHERE Status = 1 AND AccountType != 'ST'";
+			}
+			else if(state == 2){
+				query = "SELECT * FROM accounts WHERE Status = 1 AND AccountType != 'BM' AND UserName LIKE '" + school + "%'";
+			}
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -736,12 +745,36 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public boolean setAccountParameter(String userName, String param) {
+		try {
+			connect();
+			String query = "UPDATE `accounts` SET Parameters = '" + param + "' WHERE `accounts`.`UserName` = '" + userName + "'";
+			int res = con.createStatement().executeUpdate(query);
+			if (res > 0) {
+				return true;
+			}
 
-	public ArrayList<ArrayList<String>> retrieveSubjects() {
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return false;
+	}
+
+	public ArrayList<ArrayList<String>> retrieveSubjects(int state, String school) {
 		ArrayList<ArrayList<String>> subjects = new ArrayList<ArrayList<String>>();
 		try {
 			connect();
-			String query = "SELECT * FROM courses WHERE Status = 1";
+			String query = "";
+			if(state == 0){
+				query = "SELECT * FROM courses WHERE Status = 1";
+			}
+			else if(state == 2){
+				query = "SELECT * FROM courses WHERE Status = 1 AND CourseCode LIKE '" + school + "%'";
+			}
+			else if(state == 3){
+				query = "SELECT * FROM courses WHERE Status = 1 AND CourseCode LIKE '" + school + "%'";
+			}
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -758,6 +791,50 @@ public class Database {
 			System.out.println("Database Process Error! " + e);
 		}
 		return subjects;
+	}
+	
+	public int getSubjectUnits(String id) {
+		if(id.trim().equals("")){
+			id = "0";
+		}
+		try {
+			connect();
+			String query = "";
+			query = "SELECT CourseUnits FROM courses WHERE CourseID = " + id;
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				return Integer.valueOf(rs.getString("CourseUnits"));
+			}
+			else{
+				return 0;
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return 0;
+	}
+	
+	public float getSubjectPrice(String id) {
+		if(id.trim().equals("")){
+			id = "0";
+		}
+		try {
+			connect();
+			String query = "";
+			query = "SELECT Price FROM courses WHERE CourseID = " + id;
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				return Float.valueOf(rs.getString("Price"));
+			}
+			else{
+				return 0;
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return 0;
 	}
 	
 	
@@ -825,11 +902,20 @@ public class Database {
 		return false;
 	}
 
-	public ArrayList<ArrayList<String>> retrieveCurriculums() {
+	public ArrayList<ArrayList<String>> retrieveCurriculums(int state, String school) {
 		ArrayList<ArrayList<String>> curriculums = new ArrayList<ArrayList<String>>();
 		try {
 			connect();
-			String query = "SELECT * FROM curriculums WHERE Status = 1";
+			String query = "";
+			if(state == 0){
+				query = "SELECT * FROM curriculums WHERE Status = 1";
+			}
+			else if(state == 2){
+				query = "SELECT * FROM curriculums WHERE Status = 1 AND CurriculumCode LIKE '" + school + "%'";
+			}
+			else if(state == 3){
+				query = "SELECT * FROM curriculums WHERE Status = 1 AND CurriculumCode LIKE '" + school + "%'";
+			}
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -839,7 +925,7 @@ public class Database {
 				curriculum.add(rs.getString("Years"));
 				curriculum.add(rs.getString("Terms"));
 				curriculum.add(rs.getString("TotalUnits"));
-				// curriculum.add(rs.getString("Courses"));
+				curriculum.add(rs.getString("TotalPrice"));
 				curriculums.add(curriculum);
 			}
 		} catch (Exception e) {
@@ -869,10 +955,10 @@ public class Database {
 		return curriculum;
 	}
 
-	public boolean saveCurriculumStructure(String curriculum_id, String curriculum_structure) {
+	public boolean saveCurriculumStructure(String curriculum_id, String curriculum_structure, int units, float totalprice) {
 		try {
 			connect();
-			String query = "UPDATE curriculums SET courses = '" + curriculum_structure + "' WHERE CurriculumID = "
+			String query = "UPDATE curriculums SET courses = '" + curriculum_structure + "', TotalUnits = " + units + ", TotalPrice = " + totalprice + " WHERE CurriculumID = "
 					+ curriculum_id;
 			int res = con.createStatement().executeUpdate(query);
 			if (res > 0) {
@@ -1016,11 +1102,20 @@ public class Database {
 		return false;
 	}
 
-	public ArrayList<ArrayList<String>> retrieveDegrees() {
+	public ArrayList<ArrayList<String>> retrieveDegrees(int state, String school) {
 		ArrayList<ArrayList<String>> degrees = new ArrayList<ArrayList<String>>();
 		try {
 			connect();
-			String query = "SELECT * FROM degrees WHERE Status = 1";
+			String query = "";
+			if(state == 0){
+				query = "SELECT * FROM degrees WHERE Status = 1";
+			}
+			else if(state == 2){
+				query = "SELECT * FROM degrees WHERE Status = 1 AND DegreeCode LIKE '" + school + "%'";
+			}
+			else if(state == 3){
+				query = "SELECT * FROM degrees WHERE Status = 1 AND DegreeCode LIKE '" + school + "%'";
+			}
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -1094,12 +1189,37 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public String getDegreeName(String id) {
+		String degree =  "Unknown Degree";
+		try {
+			connect();
+			String query = null;
+			query = "SELECT * FROM degrees WHERE DegreeID = " + id;
+			
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next() && rs.last()) {
+				degree = rs.getString("DegreeName");
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
 
-	public ArrayList<ArrayList<String>> retrieveStudents() {
+		return degree;
+	}
+
+	public ArrayList<ArrayList<String>> retrieveStudents(int state, String school) {
 		ArrayList<ArrayList<String>> students = new ArrayList<ArrayList<String>>();
 		try {
 			connect();
-			String query = "SELECT * FROM accounts WHERE AccountType = 'ST' AND Status = 1";
+			String query = "";
+			if(state == 0){
+				query = "SELECT * FROM accounts WHERE AccountType = 'ST' AND Status = 1";
+			}
+			else if(state == 2){
+				query = "SELECT * FROM accounts WHERE AccountType = 'ST' AND Status = 1 AND UserName LIKE '" + school + "%'";
+			}
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -1107,6 +1227,12 @@ public class Database {
 				record.add(rs.getString("UserID"));
 				record.add(rs.getString("UserName"));
 				record.add(rs.getString("FullName"));
+				if(rs.getString("Parameters") != null){
+					record.add(getDegreeName(rs.getString("Parameters").replaceAll("degreeid: ", "")));
+				}
+				else{
+					record.add("NOT SET");
+				}
 				record.add(rs.getString("DateRegistered"));
 				students.add(record);
 			}

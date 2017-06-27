@@ -46,13 +46,32 @@ public class DegreesController {
 		model.addAttribute("page_title", "Degrees");
 
 		Database database = new Database();
-		request.setAttribute("degrees_degrees-list", database.retrieveDegrees());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(3, session.getAttribute("login_school").toString().trim()));
+		}
 
 		// For Curriculums List
-		request.setAttribute("degrees_curriculums-list", database.retrieveCurriculums());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("degrees_curriculums-list", database.retrieveCurriculums(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("degrees_curriculums-list", database.retrieveCurriculums(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("degrees_curriculums-list", database.retrieveCurriculums(3, session.getAttribute("login_school").toString().trim()));
+		}
 
 		//Menu Active Number
 		request.setAttribute("menuactivenum", 3);
+		if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("menuactivenum", 2);
+		}
 		return "degrees";
 	}
 
@@ -64,7 +83,15 @@ public class DegreesController {
 		logger.info("A user has reloaded degrees table.");
 		String script = "<script>";
 		Database database = new Database();
-		request.setAttribute("degrees_degrees-list", database.retrieveDegrees());
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(3, session.getAttribute("login_school").toString().trim()));
+		}
 		ArrayList<ArrayList<String>> degrees = (ArrayList<ArrayList<String>>) request
 				.getAttribute("degrees_degrees-list");
 		script = script.concat("var dataSet = [");
@@ -105,6 +132,10 @@ public class DegreesController {
 		Database database = new Database();
 		boolean isAdded = false;
 
+		//Sets up the appropriate School Prefix
+		if(session.getAttribute("login_school") != null){
+			degreeBean.setDegreecode(session.getAttribute("login_school").toString().trim() + "." + degreeBean.getDegreecode());
+		}
 		isAdded = database.addDegree("", degreeBean.getDegreecode(), degreeBean.getDegreename(),
 				degreeBean.getDegreecurriculum());
 
@@ -116,8 +147,16 @@ public class DegreesController {
 			model.addAttribute("notify_msg", "An error occurred adding a degree! Please check if values are correct.");
 		}
 
-		// Reload Accounts Table
-		request.setAttribute("degrees_degrees-list", database.retrieveSchools());
+		// Reload Degrees Table
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(0, ""));
+		}
+		else if(session.getAttribute("login_accounttype").equals("SCH")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(2, session.getAttribute("login_school").toString().trim()));
+		}
+		else if(session.getAttribute("login_accounttype").equals("ST")){
+			request.setAttribute("degrees_degrees-list", database.retrieveDegrees(3, session.getAttribute("login_school").toString().trim()));
+		}
 
 		return "redirect:degrees";
 	}
@@ -131,9 +170,20 @@ public class DegreesController {
 
 		Database database = new Database();
 		boolean isEdited = false;
-		// Prevents admin conflict
-		isEdited = database.editDegree(degreeBean.getDegreeid(), degreeBean.getDegreecode(), degreeBean.getDegreename(),
-				degreeBean.getDegreecurriculum());
+		
+		if(session.getAttribute("login_accounttype").equals("admin")){
+			isEdited = database.editDegree(degreeBean.getDegreeid(), degreeBean.getDegreecode(), degreeBean.getDegreename(),
+					degreeBean.getDegreecurriculum());
+		}
+		else{
+			if(degreeBean.getDegreecode().startsWith(session.getAttribute("login_school").toString().trim() + ".")){
+				isEdited = database.editDegree(degreeBean.getDegreeid(), degreeBean.getDegreecode(), degreeBean.getDegreename(),
+						degreeBean.getDegreecurriculum());
+			}
+			else{
+				isEdited = false;
+			}
+		}
 		if (isEdited) {
 			return "<script>$.notify('Successfully edited degree', 'success');</script>";
 		} else {

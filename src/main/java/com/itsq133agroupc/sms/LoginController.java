@@ -49,6 +49,9 @@ public class LoginController {
             	session.setAttribute("login_accounttype", database.getAccountType(loginBean.getUsername()));
             	session.setAttribute("login_fullname", database.getAccountFullName(loginBean.getUsername()));
             	session.setAttribute("login_username", loginBean.getUsername());
+            	if(loginBean.getUsername().contains(".")){
+            		session.setAttribute("login_school", loginBean.getUsername().substring(0, loginBean.getUsername().indexOf('.')));
+            	}
             	if(session.getAttribute("pageforward") != null){
             		String pageforward = session.getAttribute("pageforward").toString();
             		session.removeAttribute("pageforward");
