@@ -55,6 +55,16 @@ public class HomeController {
 		//Menu Active Number
 		request.setAttribute("menuactivenum", 0);
 		
+		Database database = new Database();
+		//Counts the number of total income
+		request.setAttribute("home_totalincome", database.countTotalIncome(Integer.parseInt(session.getAttribute("login_userid").toString())));
+		//Counts the number of business partners
+		request.setAttribute("home_bmcount", database.countBM(Integer.parseInt(session.getAttribute("login_userid").toString())));
+		//Counts the number of schools owned
+		request.setAttribute("home_schoolscount", database.countSchools(Integer.parseInt(session.getAttribute("login_userid").toString())));
+		//List of Schools
+		request.setAttribute("home_schools-statuses", database.retrieveSchoolStatuses());
+		
 		return "home";
 	}
 

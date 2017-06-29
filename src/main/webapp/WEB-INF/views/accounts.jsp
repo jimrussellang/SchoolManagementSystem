@@ -64,8 +64,7 @@
 								<kbd style="display: none;" id="mode"></kbd>
 							</div>
 							<div class="visible-xs hidden-md">
-								<br>
-								<br>
+								<br> <br>
 							</div>
 						</div>
 						<div id="edit_container" style="display: none;"
@@ -176,7 +175,7 @@
 									<label class="col-md-3 control-label">User ID</label>
 									<div class="col-md-9">
 										<input id="add_userid" name="userid" type="text"
-											class="form-control" placeholder="">
+											class="form-control" placeholder="" disabled>
 									</div>
 								</div>
 								<div class="form-group">
@@ -215,6 +214,29 @@
 												<option value="BM">Businessman</option>
 												<option value="SCH">School Admin</option>
 												<option value="ST">Student</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div id="schoolcontainer" class="form-group">
+									<label class="col-md-3 control-label">School</label>
+									<div class="col-md-4">
+										<div class="input-group">
+											<select id="school" name="school" class="select2">
+												<c:forEach var="schools"
+													items='${requestScope["accounts_schools-list"]}'>
+													<c:forEach var="school" items="${schools}" varStatus="loop">
+														<c:choose>
+															<c:when test="${loop.index=='0'}">
+																<option value="<c:out value="${school}" />">
+															</c:when>
+															<c:when test="${loop.index=='1'}">
+																<c:out value="${school}" />
+																</option>
+															</c:when>
+														</c:choose>
+													</c:forEach>
+												</c:forEach>
 											</select>
 										</div>
 									</div>
@@ -349,7 +371,8 @@
 
 	<!-- Setup Active Menu in Sidebar -->
 	<script>
-		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass("active");
+		$("ul.sidebar-nav > li:eq(${requestScope.menuactivenum})").addClass(
+				"active");
 	</script>
 
 	<!-- Script execution when page is done -->
@@ -423,7 +446,7 @@
 							highlight_usernames[0] = $(this).children(
 									'td:eq(0)').text();
 							highlight_fullnames[0] = $(this).children(
-							'td:eq(1)').text();
+									'td:eq(1)').text();
 							highlight_accttypes[0] = $(this).children(
 									'td:eq(2)').text();
 							$(this).addClass('highlight').siblings()
@@ -504,7 +527,8 @@
 									$("#edit_userid").val("");
 									$("#edit_username").val("");
 									$("#edit_password").val("");
-									$("#edit_accttype :nth-child(0)").prop('selected', true);
+									$("#edit_accttype :nth-child(0)").prop(
+											'selected', true);
 									if (highlight_users_count < highlight_users_count_total) {
 										$("#edit_userid")
 												.val(
@@ -523,8 +547,7 @@
 											backdrop : 'static',
 											keyboard : false
 										})
-									}
-									else{
+									} else {
 										cancelAnyMode();
 										highlight_userids = [];
 										highlight_usernames = [];
@@ -540,30 +563,30 @@
 		}
 		function confirmEdit() {
 			$("#editform").notify('Saving...', {
-				className:'info',
-				clickToHide: false,
-				autoHide: false
+				className : 'info',
+				clickToHide : false,
+				autoHide : false
 			});
 			$("#edit_userid").prop("disabled", false);
 			var editform_values = $("#editform").serialize();
 			$("#edit_userid").prop("disabled", true);
 			setTimeout(function() {
-			$.ajax({
-				type : 'POST',
-				data : editform_values,
-				url : 'accounts_edit',
-				success : function(data) {
-					highlight_users_count++;
-					$('.notifyjs-wrapper').trigger('notify-hide');
-					$("#editModal").modal("hide");
-					$('#ajax_result').html(data);
-					reloadTable();
-				},
-				error : function(data) {
-					//$('#result').html(data);
-					alert(data);
-				}
-			});
+				$.ajax({
+					type : 'POST',
+					data : editform_values,
+					url : 'accounts_edit',
+					success : function(data) {
+						highlight_users_count++;
+						$('.notifyjs-wrapper').trigger('notify-hide');
+						$("#editModal").modal("hide");
+						$('#ajax_result').html(data);
+						reloadTable();
+					},
+					error : function(data) {
+						//$('#result').html(data);
+						alert(data);
+					}
+				});
 			}, 1500);
 		}
 		function cancelAnyMode() {
@@ -591,9 +614,9 @@
 		}
 		function confirmDelete() {
 			$.notify('Deleting records...', {
-				className:'info',
-				clickToHide: false,
-				autoHide: false
+				className : 'info',
+				clickToHide : false,
+				autoHide : false
 			});
 			$.ajax({
 				type : 'POST',
@@ -617,6 +640,18 @@
 				}
 			});
 		}
+	</script>
+
+	<!-- Script for School Select -->
+	<script>
+	$('#schoolcontainer').hide();
+		$('#accttype').on('change', function() {
+			if (this.value == "SCH" || this.value == "ST") {
+				$('#schoolcontainer').show(500);
+			} else {
+				$('#schoolcontainer').hide(500);
+			}
+		});
 	</script>
 </body>
 

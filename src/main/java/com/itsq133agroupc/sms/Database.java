@@ -1241,5 +1241,216 @@ public class Database {
 		}
 		return students;
 	}
+	
+	public float countTotalIncome(int userid) {
+		int bm = 0;
+		ArrayList<String> degreeids = new ArrayList<String>();
+		float income = 0;
+		try {
+			connect();
+			String query = null;
+			if(userid != 0){
+				query = "SELECT AccountType FROM accounts WHERE UserID =" + userid + "";
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				if(rs.next()){
+					if(rs.getString("AccountType").equals("BM")){
+						query = "SELECT * FROM accounts WHERE Status = 1 AND AccountType = 'ST'";
+						stmt = con.createStatement();
+						rs = stmt.executeQuery(query);
+						while(rs.next()){
+							if(rs.getString("Parameters") != null)
+								degreeids.add(rs.getString("Parameters").toString().replaceAll("degreeid: ", ""));
+						}
+						for(int i=0; i<degreeids.size(); i++){
+							query = "SELECT * FROM degrees WHERE Status = 1 AND DegreeID = " + degreeids.get(i).trim();
+							stmt = con.createStatement();
+							rs = stmt.executeQuery(query);
+							if(rs.next()){
+								query = "SELECT * FROM curriculums WHERE Status = 1 AND CurriculumID = " + rs.getString("DegreeCurriculum");
+								stmt = con.createStatement();
+								rs = stmt.executeQuery(query);
+								if(rs.next()){
+									income = income + rs.getFloat("TotalPrice");
+								}
+							}
+						}
+					}
+				}
+			}
+			else{
+				query = "SELECT * FROM accounts WHERE Status = 1 AND AccountType = 'ST'";
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				while(rs.next()){
+					if(rs.getString("Parameters") != null)
+						degreeids.add(rs.getString("Parameters").toString().replaceAll("degreeid: ", ""));
+				}
+				for(int i=0; i<degreeids.size(); i++){
+					query = "SELECT * FROM degrees WHERE Status = 1 AND DegreeID = " + degreeids.get(i).trim();
+					stmt = con.createStatement();
+					rs = stmt.executeQuery(query);
+					if(rs.next()){
+						query = "SELECT * FROM curriculums WHERE Status = 1 AND CurriculumID = " + rs.getString("DegreeCurriculum");
+						stmt = con.createStatement();
+						rs = stmt.executeQuery(query);
+						if(rs.next()){
+							income = income + rs.getFloat("TotalPrice");
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+
+		return income;
+	}
+	
+	public int countBM(int userid) {
+		int bm = 0;
+		try {
+			connect();
+			String query = null;
+			if(userid != 0){
+				query = "SELECT AccountType FROM accounts WHERE UserID =" + userid + "";
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				if(rs.next()){
+					if(rs.getString("AccountType").equals("BM")){
+						query = "SELECT COUNT(*) FROM accounts WHERE Status = 1 AND AccountType = 'BM' AND UserID != " + userid;
+						stmt = con.createStatement();
+						rs = stmt.executeQuery(query);
+						if(rs.next()){
+							bm = rs.getInt(1);
+						}
+					}
+				}
+			}
+			else{
+				query = "SELECT COUNT(*) FROM accounts WHERE Status = 1 AND AccountType = 'BM'";
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				if(rs.next()){
+					bm = rs.getInt(1);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+
+		return bm;
+	}
+	
+	public int countSchools(int userid) {
+		int schools = 0;
+		try {
+			connect();
+			String query = null;
+			if(userid != 0){
+				query = "SELECT AccountType FROM accounts WHERE UserID =" + userid + "";
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				if(rs.next()){
+					if(rs.getString("AccountType").equals("BM")){
+						query = "SELECT COUNT(*) FROM schools WHERE Status = 1";
+						stmt = con.createStatement();
+						rs = stmt.executeQuery(query);
+						if(rs.next()){
+							schools = rs.getInt(1);
+						}
+					}
+				}
+			}
+			else{
+				query = "SELECT COUNT(*) FROM schools WHERE Status = 1";
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				if(rs.next()){
+					schools = rs.getInt(1);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+
+		return schools;
+	}
+	
+	public ArrayList<ArrayList<String>> retrieveSchoolStatuses() {
+		ArrayList<ArrayList<String>> schools = new ArrayList<ArrayList<String>>();
+		try {
+			connect();
+			String query = "SELECT * FROM schools WHERE Status = 1";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				ArrayList<String> school = new ArrayList<String>();
+				school.add(rs.getString("SchoolName"));
+				String query2 = "SELECT COUNT(*) FROM accounts WHERE Status = 1 AND AccountType = 'ST' AND UserName LIKE '" + rs.getString("SchoolCode") + ".%'";
+				Statement stmt2 = con.createStatement();
+				ResultSet rs2 = stmt2.executeQuery(query2);
+				if(rs2.next()){
+					school.add(String.valueOf(rs2.getInt(1)));
+				}
+				else{
+					school.add("0");
+				}
+				if(rs.getInt("Status") == 1){
+					school.add("Active");
+				}
+				else if(rs.getInt("Status") == 0){
+					school.add("Inactive");
+				}
+				schools.add(school);
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return schools;
+	}
+	
+	public ArrayList<String> getStudentInfo(int userid) {
+		ArrayList<String> studentinfo = new ArrayList<String>();
+		try {
+			connect();
+			String query = "SELECT * FROM accounts WHERE Status = 1 AND UserID = " + userid;
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				studentinfo.add(rs.getString("FullName"));
+				studentinfo.add(rs.getString("UserName").toString().substring(0, rs.getString("UserName").toString().indexOf('.')));
+				if(rs.getString("Parameters") != null){
+					String query2 = "SELECT * FROM degrees WHERE Status = 1 AND DegreeID = " + rs.getString("Parameters").replaceAll("degreeid: ", "").trim();
+					Statement stmt2 = con.createStatement();
+					ResultSet rs2 = stmt2.executeQuery(query2);
+					if(rs2.next()){
+						studentinfo.add(rs2.getString("DegreeCode") + " " + rs2.getString("DegreeName"));
+						String query3 = "SELECT * FROM curriculums WHERE Status = 1 AND CurriculumID = " + rs2.getInt("DegreeCurriculum");
+						Statement stmt3 = con.createStatement();
+						ResultSet rs3 = stmt3.executeQuery(query3);
+						if(rs3.next()){
+							studentinfo.add("" + rs3.getFloat("TotalPrice"));
+						}
+						else{
+							studentinfo.add("NOT SET");
+						}
+					}
+					else{
+						studentinfo.add("NOT SET");
+						studentinfo.add("NOT SET");
+					}
+				}
+				else{
+					studentinfo.add("NOT SET");
+					studentinfo.add("NOT SET");
+				}
+				
+			}
+		} catch (Exception e) {
+			System.out.println("Database Process Error! " + e);
+		}
+		return studentinfo;
+	}
 
 }

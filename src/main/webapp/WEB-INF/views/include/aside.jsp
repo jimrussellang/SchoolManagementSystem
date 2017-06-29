@@ -50,12 +50,12 @@
 				</div></li>
 			</c:if>
 			<c:if test = "${sessionScope.login_accounttype == 'ST'}">
-			<li class=""><a href="enrollment">
+			<!-- <li class=""><a href="enrollment">
 					<div class="icon">
 						<i class="fa fa-plus-square" aria-hidden="true"></i>
 					</div>
 					<div class="title">Enrollment</div>
-			</a></li>
+			</a></li> -->
 			<li class=""><a href="student">
 					<div class="icon">
 						<i class="fa fa-graduation-cap" aria-hidden="true"></i>

@@ -24,7 +24,7 @@
 
 			<%@ include file="include/nav.jsp" %>
 
-			<div class="btn-floating" id="help-actions">
+			<!-- <div class="btn-floating" id="help-actions">
 				<div class="btn-bg"></div>
 				<button type="button" class="btn btn-default btn-toggle"
 					data-toggle="toggle" data-target="#help-actions">
@@ -38,17 +38,21 @@
 						<li><a href="#">New Room</a></li>
 					</ul>
 				</div>
-			</div>
+			</div> -->
 
+			<c:if test = "${sessionScope.login_accounttype == 'BM' || sessionScope.login_accounttype == 'admin'}">
 			<div class="row">
 				<div class="col-xs-12">
 					<div class="card card-banner card-chart card-green no-br">
 						<div class="card-header">
 							<div class="card-title">
-								<div class="title">Income Chart</div>
+								<div class="title">Income Chart <a href="#"
+									data-toggle="tooltip" data-placement="bottom"
+									title="This section will be functional in the FINAL build."><button
+										class="btn btn-xs btn-default">?</button></a></div>
 							</div>
 							<ul class="card-action">
-								<li><a href="/educationtest"> <i class="fa fa-refresh"></i>
+								<li><a href="home"> <i class="fa fa-refresh"></i>
 								</a></li>
 							</ul>
 						</div>
@@ -64,9 +68,9 @@
 						<div class="card-body">
 							<i class="icon fa fa-money fa-4x"></i>
 							<div class="content">
-								<div class="title">Income Today</div>
+								<div class="title">Expected Income</div>
 								<div class="value">
-									<span class="sign">$</span>420
+									<span class="sign">$</span>${requestScope.home_totalincome}
 								</div>
 							</div>
 						</div>
@@ -78,9 +82,9 @@
 						<div class="card-body">
 							<i class="icon fa fa-user fa-4x"></i>
 							<div class="content">
-								<div class="title">Number of Employees</div>
+								<div class="title">Number of Business Partners</div>
 								<div class="value">
-									<span class="sign"></span>2453
+									<span class="sign"></span>${requestScope.home_bmcount}
 								</div>
 							</div>
 						</div>
@@ -94,7 +98,7 @@
 							<div class="content">
 								<div class="title">Schools Owned</div>
 								<div class="value">
-									<span class="sign"></span>10
+									<span class="sign"></span>${requestScope.home_schoolscount}
 								</div>
 							</div>
 						</div>
@@ -123,7 +127,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
+									<!-- <tr>
 										<td>FEU-Institute of Technology</td>
 										<td class="right">509689</td>
 										<td><span class="badge badge-success badge-icon"><i
@@ -162,7 +166,27 @@
 										<td><span class="badge badge-info badge-icon"><i
 												class="fa fa-credit-card" aria-hidden="true"></i><span>Finance
 													Issue</span></span></td>
-									</tr>
+									</tr> -->
+									<c:forEach var="schools"
+										items='${requestScope["home_schools-statuses"]}'>
+										<tr>
+											<c:forEach var="school" items="${schools}" varStatus="loop">
+												<c:choose>
+													<c:when test="${loop.index=='2'}">
+														<td>
+															<span class="badge badge-success badge-icon">
+																<i class="fa fa-check" aria-hidden="true"></i>
+																<span><c:out value="${school}" /></span>
+															</span>
+														</td>
+													</c:when>
+													<c:otherwise>
+														<td><c:out value="${school}" /></td>
+													</c:otherwise>
+												</c:choose>
+											</c:forEach>
+										</tr>
+									</c:forEach>
 								</tbody>
 							</table>
 						</div>
@@ -184,6 +208,10 @@
 						<div class="card-body tab-content">
 							<div role="tabpanel" class="tab-pane active" id="tab1">
 								<div class="row">
+									<a href="#"
+									data-toggle="tooltip"
+									title="This section will be functional in the FINAL build."><button
+										class="btn btn-xs btn-primary">Why is the info wrong?</button></a>
 									<div class="col-sm-8">
 										<div class="chart ct-chart-browser ct-perfect-fourth"></div>
 									</div>
@@ -202,6 +230,10 @@
 							</div>
 							<div role="tabpanel" class="tab-pane" id="tab2">
 								<div class="row">
+									<a href="#"
+									data-toggle="tooltip"
+									title="This section will be functional in the FINAL build."><button
+										class="btn btn-xs btn-primary">Why is the info wrong?</button></a>
 									<div class="col-sm-8">
 										<div class="chart ct-chart-os ct-perfect-fourth"></div>
 									</div>
@@ -218,11 +250,57 @@
 									</div>
 								</div>
 							</div>
-							<div role="tabpanel" class="tab-pane" id="tab3"></div>
+							<div role="tabpanel" class="tab-pane" id="tab3"><a href="#"
+									data-toggle="tooltip"
+									title="This section will be functional in the FINAL build."><button
+										class="btn btn-xs btn-primary">Why is this part blank?</button></a></div>
 						</div>
 					</div>
 				</div>
 			</div>
+			</c:if>
+			<c:if test = "${sessionScope.login_accounttype == 'SCH' || sessionScope.login_accounttype == 'admin'}">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="card card-banner card-chart card-green no-br">
+						<div class="card-header">
+							<div class="card-title">
+								<div class="title">Welcome School Admin!</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="container"><h3>To begin, pick one link from the menu on the left side of this page.
+							<a href="#"
+									data-toggle="tooltip"
+									title="This section will have different features in the FINAL build."><button
+										class="btn btn-xs btn-default">?</button></a>
+										</h3></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</c:if>
+			<c:if test = "${sessionScope.login_accounttype == 'ST' || sessionScope.login_accounttype == 'admin'}">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="card card-banner card-chart card-green no-br">
+						<div class="card-header">
+							<div class="card-title">
+								<div class="title">Welcome student!</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="container"><h3>To begin, pick one link from the menu on the left side of this page.
+							<a href="#"
+									data-toggle="tooltip"
+									title="This section will have different features in the FINAL build."><button
+										class="btn btn-xs btn-default">?</button></a>
+										</h3></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</c:if>
 			<%@ include file="include/footer.jsp"%>
 		</div>
 

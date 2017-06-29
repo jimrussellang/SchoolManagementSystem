@@ -67,7 +67,7 @@
 												<div class="message">
 													<img class="profile" src="https://placehold.it/100x100">
 													<div class="content">
-														<div class="title">"Shit Happens"</div>
+														<div class="title">"Hello"</div>
 														<div class="description">Hadji Tejuco</div>
 													</div>
 												</div>

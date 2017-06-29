@@ -61,6 +61,8 @@ public class AccountsController {
 		
 		//Menu Active Number
 		request.setAttribute("menuactivenum", 1);
+		
+		request.setAttribute("accounts_schools-list", database.retrieveSchools());
 		return "accounts";
 	}
 
@@ -85,6 +87,9 @@ public class AccountsController {
 			//Sets up the appropriate School Prefix
 			if(session.getAttribute("login_school") != null){
 				accountBean.setUsername(session.getAttribute("login_school").toString().trim() + "." + accountBean.getUsername());
+			}
+			if((session.getAttribute("login_accounttype").equals("BM") || session.getAttribute("login_accounttype").equals("admin")) && (accountBean.getAccttype().equals("SCH") || accountBean.getAccttype().equals("ST"))){
+				accountBean.setUsername(accountBean.getSchool() + "." + accountBean.getUsername());
 			}
 			isAdded = database.addAccount("", accountBean.getUsername(), accountBean.getAccttype(),
 					accountBean.getPassword(), accountBean.getFullname());
